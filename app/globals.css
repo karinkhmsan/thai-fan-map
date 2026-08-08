@@ -43,3 +43,9 @@ input, textarea, select, button { font-family: 'Kanit', sans-serif; }
 /* leaflet ปรับให้เข้ากับธีมมืด */
 .leaflet-container { background: #1B1440 !important; border-radius: 14px; }
 .leaflet-control-attribution { display: none; }
+
+@media (max-width: 480px) {
+  .mobile-hide {
+    display: none !important;
+  }
+}

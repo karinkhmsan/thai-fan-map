@@ -1,6 +1,19 @@
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { getCurrentUser } from "@/lib/auth.mjs";
+import Providers from "@/components/Providers";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="th">
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
+    </html>
+  );
+}
 
 export const metadata = {
   title: "FanQuestMap — แผนที่งานเกมและคอสเพลย์ทั่วไทย",

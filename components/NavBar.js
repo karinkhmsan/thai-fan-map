@@ -3,16 +3,27 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Search, Plus, Shield, User } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function NavBar({ initialUser }) {
+  const { data: session } = useSession();
   const [user, setUser] = useState(initialUser);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
-    setUser(initialUser);
-  }, [initialUser]);
+    if (session?.user) {
+      setUser({
+        id: session.user.id,
+        username: session.user.name || session.user.email?.split("@")[0],
+        avatarUrl: session.user.image,
+        role: session.user.role,
+      });
+    } else {
+      setUser(initialUser);
+    }
+  }, [initialUser, session]);
 
   useEffect(() => {
     if (!search.trim()) { setResults([]); return; }
@@ -53,7 +64,7 @@ export default function NavBar({ initialUser }) {
             )}
 
             {/* ปุ่มสร้างโพสต์ */}
-            <Link href="/create" className="btn-primary" style={{ padding: "6px 12px", fontSize: 13, display: "flex", alignItems: "center", gap: 4 }}>
+            <Link href="/create" className="btn-primary" style={{ padding: "6px 12px", fontSize 13, display: "flex", alignItems: "center", gap: 4 }}>
               <Plus size={15} /> <span className="mobile-hide">สร้างโพสต์</span>
             </Link>
 

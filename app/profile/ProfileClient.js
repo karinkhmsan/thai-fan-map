@@ -145,7 +145,7 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
 
       {/* การ์ดโปรไฟล์หลัก */}
       <div className="card" style={{ padding: 24, marginBottom: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+        <div className="profile-header-row">
           <div style={{ position: "relative", width: 70, height: 70, flexShrink: 0 }}>
             {form.avatarUrl ? (
               <img src={form.avatarUrl} alt="avatar" style={{ width: 70, height: 70, borderRadius: "50%", objectFit: "cover" }} />
@@ -162,16 +162,18 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
             )}
           </div>
 
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>{user.username}</div>
+          <div className="profile-name-block" style={{ flex: 1, minWidth: 0 }}>
+            <div className="profile-username" style={{ fontSize: 18, fontWeight: 600 }}>
+              {user.username}
+            </div>
             <div style={{ fontSize: 12, color: "#8177AE" }}>เข้าร่วมเมื่อ {new Date(user.createdAt).toLocaleDateString("th-TH")}</div>
           </div>
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => setIsEditing(!isEditing)} className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <div className="profile-actions" style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => setIsEditing(!isEditing)} className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
               <Edit3 size={14} /> {isEditing ? "ยกเลิก" : "แก้ไขโปรไฟล์"}
             </button>
-            <button onClick={logout} className="btn-ghost" style={{ color: "#FF3D8A" }}>ออกจากระบบ</button>
+            <button onClick={logout} className="btn-ghost" style={{ color: "#FF3D8A", whiteSpace: "nowrap" }}>ออกจากระบบ</button>
           </div>
         </div>
 
@@ -264,6 +266,34 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
         ))}
         {initialEvents.length === 0 && <p style={{ fontSize: 13, color: "#5A5182" }}>คุณยังไม่เคยโพสต์งานเลย ลองสร้างโพสต์แรกของคุณดูสิ!</p>}
       </div>
+
+      <style jsx>{`
+        .profile-header-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 16px;
+        }
+        @media (max-width: 640px) {
+          .profile-header-row {
+            flex-wrap: wrap;
+          }
+          .profile-username {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .profile-actions {
+            width: 100%;
+            order: 3;
+            margin-top: 4px;
+          }
+          .profile-actions button {
+            flex: 1;
+            justify-content: center;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -178,7 +178,7 @@ function ImageGrid({ images, onOpen }) {
 
   if (n === 1) {
     return (
-      <div onClick={() => onOpen(0)} style={{ cursor: "zoom-in" }}>
+      <div onClick={() => onOpen(0)} style={{ position: "relative", overflow: "hidden", cursor: "zoom-in" }}>
         <img src={images[0]} alt="" style={{ width: "100%", maxHeight: 440, objectFit: "cover", display: "block" }} />
       </div>
     );
@@ -186,9 +186,9 @@ function ImageGrid({ images, onOpen }) {
 
   if (n === 2) {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, height: 300 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, height: 300, position: "relative", overflow: "hidden" }}>
         {images.map((img, i) => (
-          <img key={i} src={img} alt="" onClick={() => onOpen(i)} style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
+          <img key={i} src={img} alt="" onClick={() => onOpen(i)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
         ))}
       </div>
     );
@@ -196,19 +196,19 @@ function ImageGrid({ images, onOpen }) {
 
   if (n === 3) {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320 }}>
-        <img src={images[0]} alt="" onClick={() => onOpen(0)} style={{ gridRow: "1 / 3", width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
-        <img src={images[1]} alt="" onClick={() => onOpen(1)} style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
-        <img src={images[2]} alt="" onClick={() => onOpen(2)} style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320, position: "relative", overflow: "hidden" }}>
+        <img src={images[0]} alt="" onClick={() => onOpen(0)} style={{ gridRow: "1 / 3", width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
+        <img src={images[1]} alt="" onClick={() => onOpen(1)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
+        <img src={images[2]} alt="" onClick={() => onOpen(2)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
       </div>
     );
   }
 
   const shown = images.slice(0, 4);
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320, position: "relative", overflow: "hidden" }}>
       {shown.map((img, i) => (
-        <div key={i} onClick={() => onOpen(i)} style={{ position: "relative", cursor: "zoom-in" }}>
+        <div key={i} onClick={() => onOpen(i)} style={{ position: "relative", overflow: "hidden", cursor: "zoom-in" }}>
           <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           {i === 3 && n > 4 && (
             <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 600 }}>

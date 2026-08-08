@@ -1,0 +1,48 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+export default function RegisterPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setError(""); setLoading(true);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (!res.ok) { setError(data.error); return; }
+    router.push("/");
+    router.refresh();
+  };
+
+  return (
+    <div style={{ maxWidth: 380, margin: "40px auto" }}>
+      <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 18 }}>สมัครสมาชิก</h1>
+      <form onSubmit={submit} className="card" style={{ padding: 20, display: "grid", gap: 14 }}>
+        <div>
+          <label style={{ fontSize: 13, color: "#B8AEDB", display: "block", marginBottom: 6 }}>ชื่อผู้ใช้</label>
+          <input className="input" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={2} />
+        </div>
+        <div>
+          <label style={{ fontSize: 13, color: "#B8AEDB", display: "block", marginBottom: 6 }}>รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)</label>
+          <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+        </div>
+        {error && <p style={{ color: "#FF3D8A", fontSize: 13, margin: 0 }}>{error}</p>}
+        <button className="btn-primary" disabled={loading}>{loading ? "กำลังสมัคร..." : "สมัครสมาชิก"}</button>
+        <p style={{ fontSize: 13, color: "#8177AE", textAlign: "center", margin: 0 }}>
+          มีบัญชีอยู่แล้ว? <Link href="/login" style={{ color: "#FF3D8A" }}>เข้าสู่ระบบ</Link>
+        </p>
+      </form>
+    </div>
+  );
+}

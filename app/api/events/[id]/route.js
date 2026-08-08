@@ -1,0 +1,17 @@
+import { NextResponse } from "next/server";
+import { getEvent, deleteEvent } from "@/lib/db.mjs";
+import { getCurrentUser } from "@/lib/auth.mjs";
+
+export async function GET(_req, { params }) {
+  const event = await getEvent(params.id);
+  if (!event) return NextResponse.json({ error: "ไม่พบโพสต์นี้" }, { status: 404 });
+  return NextResponse.json({ event });
+}
+
+export async function DELETE(_req, { params }) {
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 });
+  const ok = await deleteEvent(params.id, user.id);
+  if (!ok) return NextResponse.json({ error: "ลบไม่ได้ (ไม่ใช่เจ้าของโพสต์หรือไม่พบโพสต์)" }, { status: 403 });
+  return NextResponse.json({ ok: true });
+}

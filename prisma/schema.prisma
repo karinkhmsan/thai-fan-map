@@ -1,0 +1,50 @@
+// สคีมาฐานข้อมูลจริง ใช้กับ Postgres ใดก็ได้ (Supabase, Neon, RDS ฯลฯ)
+// DATABASE_URL = connection string แบบ pooled (ผ่าน pgbouncer) ใช้ตอนแอปรันจริง
+// DIRECT_URL   = connection string แบบตรง ใช้ตอนรัน migration/db push เท่านั้น
+// Supabase ให้ทั้งสองค่านี้ในหน้า Project Settings > Database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  username     String    @unique
+  passwordHash String
+  avatarColor  String
+  createdAt    DateTime  @default(now())
+  events       Event[]
+  comments     Comment[]
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  category    String
+  province    String
+  district    String    @default("")
+  description String
+  images      String[]  @default([])
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  comments    Comment[]
+
+  @@index([province])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}

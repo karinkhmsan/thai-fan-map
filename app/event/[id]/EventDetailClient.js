@@ -60,7 +60,20 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
           <Link href={`/province/${encodeURIComponent(event.province)}`} style={{ display: "flex", alignItems: "center", gap: 5, color: "#B8AEDB", fontSize: 14, marginBottom: 4, width: "fit-content" }}>
             <MapPin size={14} /> {event.district ? `อำเภอ${event.district}, ` : ""}จังหวัด{event.province}
           </Link>
-          <div style={{ fontSize: 13, color: "#5A5182", marginBottom: 16 }}>โพสต์โดย {event.authorName} · {event.createdAt}</div>
+
+          {/* จุดที่ 1: ใส่ลิงก์กดไปหน้า Profile ผู้โพสต์ */}
+          <div style={{ fontSize: 13, color: "#5A5182", marginBottom: 16 }}>
+            โพสต์โดย{" "}
+            {event.authorId ? (
+              <Link href={`/profile/${event.authorId}`} style={{ color: "#FFC145", textDecoration: "none", fontWeight: 500 }}>
+                {event.authorName}
+              </Link>
+            ) : (
+              event.authorName
+            )}{" "}
+            · {event.createdAt}
+          </div>
+
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "#E4DEFF", whiteSpace: "pre-wrap" }}>{event.description}</p>
         </div>
 
@@ -72,7 +85,16 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
             {event.comments.map((c) => (
               <div key={c.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: "#FFC145" }}>{c.authorName}</span>
+                  
+                  {/* จุดที่ 2: ใส่ลิงก์กดไปหน้า Profile ผู้คอมเมนต์ */}
+                  {c.authorId ? (
+                    <Link href={`/profile/${c.authorId}`} style={{ fontSize: 13, fontWeight: 500, color: "#FFC145", textDecoration: "none" }}>
+                      {c.authorName}
+                    </Link>
+                  ) : (
+                    <span style={{ fontSize: 13, fontWeight: 500, color: "#FFC145" }}>{c.authorName}</span>
+                  )}
+
                   <span style={{ fontSize: 11, color: "#5A5182" }}>{c.createdAt}</span>
                 </div>
                 <div style={{ fontSize: 14, color: "#E4DEFF" }}>{c.text}</div>

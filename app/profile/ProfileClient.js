@@ -65,10 +65,12 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
       if (data.url) {
         setForm((prev) => ({ ...prev, avatarUrl: data.url }));
         setImageSrc(null); // ปิด Pop-up
+      } else {
+        alert("อัปโหลดไม่สำเร็จ: " + (data.error || "Unknown error"));
       }
     } catch (e) {
       console.error(e);
-      alert("เกิดข้อผิดพลาดในการตัดขอบรูป");
+      alert("เกิดข้อผิดพลาดในการตัดขอบรูปภาพ");
     } finally {
       setUploading(false);
     }

@@ -4,17 +4,24 @@ import { MapContainer, GeoJSON, CircleMarker, Tooltip } from "react-leaflet";
 import * as topojson from "topojson-client";
 import provincesRaw from "@/data/provinces-th.json";
 
-const PROVINCES = provincesRaw.map(([name, lat, lon]) => ({ name, lat, lon }));
+const PROVINCES = provincesRaw.map(([name, lat, lon, nameEn]) => ({ name, lat, lon, nameEn }));
 
-// property key ที่ไฟล์ TopoJSON ต้นทางอาจใช้เก็บชื่อจังหวัด — ลองไล่ทีละคีย์
+// property key ที่ไฟล์ GeoJSON ต้นทาง (apisit/thailand.json) ใช้เก็บชื่อจังหวัด — เป็นภาษาอังกฤษ
+// เช่น "Mae Hong Son" — เผื่อไฟล์แหล่งอื่นใช้คีย์ชื่ออื่น เลยลองไล่หลายคีย์ไว้ด้วย
 const NAME_KEYS = ["name", "NAME_1", "PROV_NAMT", "CHANGWAT_T", "changwat_t", "ADM1_TH", "province", "Prov_Name", "NAME_TH"];
+
+const normalize = (s) => s.toLowerCase().replace(/[^a-zก-๙]/g, "");
 
 function findFeatureProvinceName(feature) {
   const props = feature.properties || {};
   for (const key of NAME_KEYS) {
     if (props[key]) {
-      const val = String(props[key]).trim();
-      const match = PROVINCES.find((p) => p.name === val || p.name.includes(val) || val.includes(p.name));
+      const val = normalize(String(props[key]));
+      const match = PROVINCES.find((p) => {
+        const enNorm = normalize(p.nameEn || "");
+        const thNorm = normalize(p.name);
+        return val === enNorm || val === thNorm || (enNorm && (val.includes(enNorm) || enNorm.includes(val)));
+      });
       if (match) return match.name;
     }
   }
@@ -26,14 +33,16 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
   const [geoFailed, setGeoFailed] = useState(false);
 
   useEffect(() => {
-    fetch("/data/thailand-provinces.topojson")
+    fetch("/data/thailand-provinces.geojson")
       .then((res) => {
         if (!res.ok) throw new Error("not found");
         return res.json();
       })
-      .then((topo) => {
-        const objectKey = Object.keys(topo.objects)[0];
-        const converted = topojson.feature(topo, topo.objects[objectKey]);
+      .then((data) => {
+        // รองรับทั้งไฟล์ GeoJSON ตรงๆ (FeatureCollection) และไฟล์ TopoJSON ที่ต้องแปลงก่อน
+        const converted = data.type === "Topology"
+          ? topojson.feature(data, data.objects[Object.keys(data.objects)[0]])
+          : data;
         setGeo(converted);
       })
       .catch(() => setGeoFailed(true));

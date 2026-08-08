@@ -9,40 +9,40 @@ import provincesRaw from "@/data/provinces-th.json";
 const PROVINCES = provincesRaw.map(([name]) => name);
 const MAX_IMAGES = 6;
 
-export default function CreatePage() {
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("game");
-  const [province, setProvince] = useState(PROVINCES[0]);
-  const [district, setDistrict] = useState("");
+export default function EditEventClient({ event }) {
+  const [title, setTitle] = useState(event.title);
+  const [category, setCategory] = useState(event.category);
+  const [province, setProvince] = useState(event.province);
+  const [district, setDistrict] = useState(event.district || "");
   const [districtOptions, setDistrictOptions] = useState([]);
-  const [description, setDescription] = useState("");
-  const [images, setImages] = useState([]); // dataURL previews (local only)
-  const [files, setFiles] = useState([]); // actual File objects to upload
+  const [images, setImages] = useState(event.images || []);
+  const [files, setFiles] = useState([]);
+  const [description, setDescription] = useState(event.description);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const fileRef = useRef(null);
   const router = useRouter();
+  const skipFirstDistrictReset = useRef(true);
 
   useEffect(() => {
     fetch(`/api/districts?province=${encodeURIComponent(province)}`)
       .then((r) => r.json())
       .then((d) => setDistrictOptions(d.districts || []));
+    if (skipFirstDistrictReset.current) {
+      skipFirstDistrictReset.current = false;
+      return;
+    }
     setDistrict("");
   }, [province]);
 
-  useEffect(() => {
-    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
-      if (!d.user) router.push("/login");
-    });
-  }, [router]);
-
   const handleFiles = async (fileList) => {
-    const arr = Array.from(fileList).slice(0, MAX_IMAGES - files.length);
+    const room = MAX_IMAGES - images.length;
+    const arr = Array.from(fileList).slice(0, room);
     if (arr.length === 0) return;
     setPreparing(true);
     const compressed = await compressImages(arr);
-    setFiles((prev) => [...prev, ...compressed].slice(0, MAX_IMAGES));
+    setFiles((prev) => [...prev, ...compressed]);
     compressed.forEach((f) => {
       const reader = new FileReader();
       reader.onload = () => setImages((prev) => [...prev, reader.result]);
@@ -52,8 +52,11 @@ export default function CreatePage() {
   };
 
   const removeImage = (i) => {
+    const existingCount = images.length - files.length;
     setImages((prev) => prev.filter((_, idx) => idx !== i));
-    setFiles((prev) => prev.filter((_, idx) => idx !== i));
+    if (i >= existingCount) {
+      setFiles((prev) => prev.filter((_, idx) => idx !== (i - existingCount)));
+    }
   };
 
   const canSubmit = title.trim() && description.trim() && province && !submitting;
@@ -61,23 +64,27 @@ export default function CreatePage() {
   const submit = async () => {
     setError(""); setSubmitting(true);
     try {
-      let urls = [];
+      let newUrls = [];
       if (files.length) {
         const fd = new FormData();
         files.forEach((f) => fd.append("images", f));
         const upRes = await fetch("/api/upload", { method: "POST", body: fd });
         const upData = await upRes.json();
         if (!upRes.ok) throw new Error(upData.error || "อัปโหลดรูปไม่สำเร็จ");
-        urls = upData.urls;
+        newUrls = upData.urls;
       }
-      const res = await fetch("/api/events", {
-        method: "POST",
+      const existingCount = images.length - files.length;
+      const keptExisting = images.slice(0, existingCount);
+      const finalImages = [...keptExisting, ...newUrls];
+
+      const res = await fetch(`/api/events/${event.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, category, province, district, description, images: urls }),
+        body: JSON.stringify({ title, category, province, district, description, images: finalImages }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      router.push(`/event/${data.event.id}`);
+      router.push(`/event/${event.id}`);
     } catch (e) {
       setError(e.message || "เกิดข้อผิดพลาด");
     } finally {
@@ -87,10 +94,10 @@ export default function CreatePage() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, fontWeight: 600, margin: "0 0 18px" }}>สร้างโพสต์งานใหม่</h1>
+      <h1 style={{ fontSize: 22, fontWeight: 600, margin: "0 0 18px" }}>แก้ไขโพสต์</h1>
       <div className="card" style={{ padding: 20, display: "grid", gap: 16 }}>
         <Field label="ชื่องาน">
-          <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="เช่น เชียงใหม่ Retro Game Fest" />
+          <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} />
         </Field>
 
         <Field label="ประเภทงาน">
@@ -124,7 +131,7 @@ export default function CreatePage() {
 
         <Field label="รายละเอียดงาน">
           <textarea className="input" rows={5} value={description} onChange={(e) => setDescription(e.target.value)}
-            placeholder="บอกเล่ารายละเอียดงาน สถานที่ วันเวลา กิจกรรมภายในงาน..." style={{ resize: "vertical", fontFamily: "inherit" }} />
+            style={{ resize: "vertical", fontFamily: "inherit" }} />
         </Field>
 
         <Field label={`รูปภาพ (สูงสุด ${MAX_IMAGES} รูป)`}>
@@ -149,7 +156,7 @@ export default function CreatePage() {
 
         {error && <p style={{ color: "#FF3D8A", fontSize: 13, margin: 0 }}>{error}</p>}
         <button disabled={!canSubmit} onClick={submit} className="btn-primary" style={{ opacity: canSubmit ? 1 : 0.4, padding: 12, fontSize: 15 }}>
-          {submitting ? "กำลังโพสต์..." : "โพสต์งานลงแผนที่"}
+          {submitting ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
         </button>
       </div>
     </div>

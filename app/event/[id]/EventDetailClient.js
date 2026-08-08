@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MessageCircle, MapPin, Trash2 } from "lucide-react";
+import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil } from "lucide-react";
 import { catInfo } from "@/lib/categories";
 
 export default function EventDetailClient({ event: initialEvent, currentUser }) {
@@ -51,9 +51,14 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <span style={{ fontSize: 12, padding: "3px 10px", borderRadius: 999, background: cat.color + "22", color: cat.color }}>{cat.label}</span>
             {isOwner && (
-              <button onClick={remove} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
-                <Trash2 size={15} /> ลบโพสต์
-              </button>
+              <div style={{ display: "flex", gap: 14 }}>
+                <Link href={`/event/${event.id}/edit`} style={{ background: "none", border: "none", color: "#FFC145", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none" }}>
+                  <Pencil size={15} /> แก้ไข
+                </Link>
+                <button onClick={remove} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
+                  <Trash2 size={15} /> ลบโพสต์
+                </button>
+              </div>
             )}
           </div>
           <h1 style={{ fontSize: 22, fontWeight: 600, margin: "10px 0 6px" }}>{event.title}</h1>
@@ -61,7 +66,6 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
             <MapPin size={14} /> {event.district ? `อำเภอ${event.district}, ` : ""}จังหวัด{event.province}
           </Link>
 
-          {/* จุดที่ 1: ใส่ลิงก์กดไปหน้า Profile ผู้โพสต์ */}
           <div style={{ fontSize: 13, color: "#5A5182", marginBottom: 16 }}>
             โพสต์โดย{" "}
             {event.authorId ? (
@@ -85,8 +89,6 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
             {event.comments.map((c) => (
               <div key={c.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                  
-                  {/* จุดที่ 2: ใส่ลิงก์กดไปหน้า Profile ผู้คอมเมนต์ */}
                   {c.authorId ? (
                     <Link href={`/profile/${c.authorId}`} style={{ fontSize: 13, fontWeight: 500, color: "#FFC145", textDecoration: "none" }}>
                       {c.authorName}
@@ -94,7 +96,6 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
                   ) : (
                     <span style={{ fontSize: 13, fontWeight: 500, color: "#FFC145" }}>{c.authorName}</span>
                   )}
-
                   <span style={{ fontSize: 11, color: "#5A5182" }}>{c.createdAt}</span>
                 </div>
                 <div style={{ fontSize: 14, color: "#E4DEFF" }}>{c.text}</div>

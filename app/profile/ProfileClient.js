@@ -55,8 +55,6 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
     try {
       setUploading(true);
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-
-      // แปลง Blob เป็น File Object เพื่อให้ Server อ่านค่าไฟล์ได้ถูกต้อง
       const file = new File([croppedImageBlob], "avatar.jpg", { type: "image/jpeg" });
 
       const formData = new FormData();
@@ -65,11 +63,16 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await res.json();
 
-      if (res.ok && data.url) {
-        setForm((prev) => ({ ...prev, avatarUrl: data.url }));
+      console.log("Upload Response Data:", data); // กด F12 ดูค่านี้ใน Console ได้เลย
+
+      // รองรับชื่อฟิลด์ URL ทุกรูปแบบที่ API อาจจะส่งมา
+      const uploadedUrl = data.url || data.publicUrl || data.location || (Array.isArray(data.urls) ? data.urls[0] : null);
+
+      if (res.ok && uploadedUrl) {
+        setForm((prev) => ({ ...prev, avatarUrl: uploadedUrl }));
         setImageSrc(null); // ปิด Pop-up
       } else {
-        alert("อัปโหลดไม่สำเร็จ: " + (data.error || `Server Error (${res.status})`));
+        alert("อัปโหลดไม่สำเร็จ: " + (data.error || JSON.stringify(data)));
       }
     } catch (e) {
       console.error(e);

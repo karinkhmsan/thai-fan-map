@@ -56,21 +56,24 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
       setUploading(true);
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
 
+      // แปลง Blob เป็น File Object เพื่อให้ Server อ่านค่าไฟล์ได้ถูกต้อง
+      const file = new File([croppedImageBlob], "avatar.jpg", { type: "image/jpeg" });
+
       const formData = new FormData();
-      formData.append("file", croppedImageBlob, "avatar.jpg");
+      formData.append("file", file);
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await res.json();
 
-      if (data.url) {
+      if (res.ok && data.url) {
         setForm((prev) => ({ ...prev, avatarUrl: data.url }));
         setImageSrc(null); // ปิด Pop-up
       } else {
-        alert("อัปโหลดไม่สำเร็จ: " + (data.error || "Unknown error"));
+        alert("อัปโหลดไม่สำเร็จ: " + (data.error || `Server Error (${res.status})`));
       }
     } catch (e) {
       console.error(e);
-      alert("เกิดข้อผิดพลาดในการตัดขอบรูปภาพ");
+      alert("เกิดข้อผิดพลาดในการตัดขอบรูปภาพ: " + e.message);
     } finally {
       setUploading(false);
     }

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { MapContainer, GeoJSON, CircleMarker, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import * as topojson from "topojson-client";
 import provincesRaw from "@/data/provinces-th.json";
@@ -36,8 +36,7 @@ function FitBounds({ geo }) {
     if (!geo) return;
     const bounds = L.geoJSON(geo).getBounds();
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [12, 12] });
-      map.setMinZoom(map.getZoom());
+      map.fitBounds(bounds, { padding: [24, 24] });
     }
   }, [geo, map]);
   return null;
@@ -69,14 +68,26 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
   );
 
   return (
-    <div className="card" style={{ padding: 8, height: 620, position: "relative" }}>
+    <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
       <MapContainer
-        center={[13.0, 101.2]}
-        zoom={5.4}
-        style={{ height: "100%", width: "100%", borderRadius: 12 }}
-        zoomControl={true}
+        center={[13.7563, 100.5018]}
+        zoom={6}
+        minZoom={4}
+        maxZoom={18}
+        style={{ height: "100%", width: "100%", borderRadius: 0 }}
+        zoomControl={false}
         scrollWheelZoom={true}
       >
+        {/* แผนที่จริง (ถนน/เมือง/ป้ายชื่อ) โทนมืดให้เข้ากับธีมเว็บ */}
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+          maxZoom={20}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        />
+
+        <ZoomControl position="bottomleft" />
+
         <FitBounds geo={geo} />
 
         {geo && (
@@ -85,11 +96,12 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
             style={(feature) => {
               const name = findFeatureProvinceName(feature);
               const hasEvents = name && eventsByProvince[name]?.length;
+              const color = hasEvents ? catColor(eventsByProvince[name][0].category) : "rgba(127,119,221,0.6)";
               return {
-                color: "rgba(127,119,221,0.5)",
-                weight: 1,
-                fillColor: hasEvents ? catColor(eventsByProvince[name][0].category) : "#2A2158",
-                fillOpacity: hasEvents ? 0.55 : 0.25,
+                color,
+                weight: hasEvents ? 1.6 : 1,
+                fillColor: hasEvents ? catColor(eventsByProvince[name][0].category) : "#7F77DD",
+                fillOpacity: hasEvents ? 0.32 : 0.05,
               };
             }}
             onEachFeature={(feature, layer) => {
@@ -97,8 +109,8 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
               if (name) {
                 layer.bindTooltip(`${name} · ${eventsByProvince[name]?.length || 0} งาน`, { sticky: true });
                 layer.on("click", () => onPinClick(name));
-                layer.on("mouseover", () => layer.setStyle({ fillOpacity: 0.8 }));
-                layer.on("mouseout", () => layer.setStyle({ fillOpacity: eventsByProvince[name]?.length ? 0.55 : 0.25 }));
+                layer.on("mouseover", () => layer.setStyle({ fillOpacity: 0.7 }));
+                layer.on("mouseout", () => layer.setStyle({ fillOpacity: eventsByProvince[name]?.length ? 0.32 : 0.05 }));
               }
             }}
           />
@@ -122,7 +134,7 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
       </MapContainer>
 
       {geoFailed && (
-        <div style={{ position: "absolute", bottom: 14, left: 14, right: 14, background: "rgba(21,15,46,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#B8AEDB" }}>
+        <div style={{ position: "absolute", bottom: 90, left: 14, right: 14, zIndex: 5, background: "rgba(21,15,46,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#B8AEDB" }}>
           ยังไม่พบไฟล์ขอบเขตจังหวัดจริง — รันคำสั่ง <code>npm run setup:geo</code> แล้วรีสตาร์ตแอป (ตอนนี้ใช้หมุดแสดงตำแหน่งแทน)
         </div>
       )}

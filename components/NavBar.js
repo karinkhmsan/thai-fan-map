@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Search, Plus, Shield, User } from "lucide-react";
@@ -9,10 +9,25 @@ export default function NavBar({ initialUser }) {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const router = useRouter();
+  const headerRef = useRef(null);
 
   useEffect(() => {
   setUser(initialUser);
 }, [initialUser]);
+
+  // วัดความสูงจริงของแถบบน แล้วเก็บไว้เป็น CSS variable
+  // ให้หน้าแผนที่แบบเต็มจอคำนวณความสูงที่เหลือได้พอดี ไม่ว่าจอขนาดไหน
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const setVar = () => {
+      document.documentElement.style.setProperty("--navbar-h", `${el.offsetHeight}px`);
+    };
+    setVar();
+    const ro = new ResizeObserver(setVar);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!search.trim()) { setResults([]); return; }
@@ -30,7 +45,7 @@ export default function NavBar({ initialUser }) {
   }, [search]);
 
   return (
-    <header style={{ position: "sticky", top: 0, zIndex: 50, backdropFilter: "blur(12px)", background: "rgba(21,15,46,0.92)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+    <header ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 50, backdropFilter: "blur(12px)", background: "rgba(21,15,46,0.92)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "10px 14px", display: "flex", flexDirection: "column", gap: 10 }}>
         
         {/* แถบบน: โลโก้ + ปุ่มการใช้งานหลัก */}

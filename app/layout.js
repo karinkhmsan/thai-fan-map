@@ -6,6 +6,9 @@ import { getCurrentUser } from "@/lib/auth.mjs";
 export const metadata = {
   title: "FanQuestMap - แผนที่งานเกมและคอสเพลย์ทั่วไทย",
   description: "ค้นหางานแสดงสินค้า คอสเพลย์ และกิจกรรมต่างๆ ในจังหวัดของคุณ",
+   icons: {
+    icon: "icon.png",
+  },
 };
 
 export default async function RootLayout({ children }) {
@@ -20,7 +23,7 @@ export default async function RootLayout({ children }) {
             {children}
           </main>
           <footer style={{ textAlign: "center", padding: "40px 0", color: "#8177AE", fontSize: 12 }}>
-            FanQuestMap · ข้อมูลเก็บในฐานข้อมูล Postgres จริง รูปภาพเก็บบน object storage
+            FanQuestMap · 2026
           </footer>
         </Providers>
       </body>

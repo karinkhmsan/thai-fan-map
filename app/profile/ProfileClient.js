@@ -1,8 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Trash2, Camera, Link as LinkIcon, Edit3 } from "lucide-react";
+import { User, Trash2, Camera, Link as LinkIcon, Edit3, Check, X } from "lucide-react";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "@/lib/cropImage";
 
 export default function ProfileClient({ user, myEvents: initialEvents }) {
   const router = useRouter();
@@ -16,6 +18,12 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
     tiktokUrl: user.tiktokUrl || "",
   });
 
+  // State สำหรับการ Crop รูป
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
   const logout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/");
@@ -28,20 +36,42 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
     if (res.ok) router.refresh();
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
-    const data = await res.json();
-    if (data.url) {
-      setForm((prev) => ({ ...prev, avatarUrl: data.url }));
+  // เลือกไฟล์แล้วเปิดหน้าต่าง Crop
+  const onFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener("load", () => setImageSrc(reader.result));
+      reader.readAsDataURL(file);
     }
-    setUploading(false);
+  };
+
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  // กดยืนยัน Crop แล้วทำการ Upload ขึ้น R2
+  const handleCropAndUpload = async () => {
+    try {
+      setUploading(true);
+      const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+
+      const formData = new FormData();
+      formData.append("file", croppedImageBlob, "avatar.jpg");
+
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.url) {
+        setForm((prev) => ({ ...prev, avatarUrl: data.url }));
+        setImageSrc(null); // ปิด Pop-up
+      }
+    } catch (e) {
+      console.error(e);
+      alert("เกิดข้อผิดพลาดในการตัดขอบรูป");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async (e) => {
@@ -59,10 +89,53 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
 
   return (
     <div style={{ maxWidth: 650, margin: "0 auto" }}>
+      {/* Pop-up Modal สำหรับ Crop รูป */}
+      {imageSrc && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div style={{ position: "relative", width: "100%", maxWidth: 400, height: 300, background: "#333", borderRadius: 12, overflow: "hidden" }}>
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              cropShape="round"
+              showGrid={false}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+            />
+          </div>
+
+          <div style={{ width: "100%", maxWidth: 400, marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#fff", fontSize: 12 }}>
+              <span>Zoom</span>
+              <input
+                type="range"
+                value={zoom}
+                min={1}
+                max={3}
+                step={0.1}
+                aria-label="Zoom"
+                onChange={(e) => setZoom(Number(e.target.value))}
+                style={{ flex: 1 }}
+              />
+            </div>
+
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button onClick={() => setImageSrc(null)} style={{ padding: "8px 16px", background: "#444", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                <X size={14} /> ยกเลิก
+              </button>
+              <button onClick={handleCropAndUpload} disabled={uploading} style={{ padding: "8px 16px", background: "#E91E63", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                <Check size={14} /> {uploading ? "กำลังอัปโหลด..." : "ตกลง"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* การ์ดโปรไฟล์หลัก */}
       <div className="card" style={{ padding: 24, marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-          {/* รูป Avatar / อัปโหลดรูป */}
           <div style={{ position: "relative", width: 70, height: 70, flexShrink: 0 }}>
             {form.avatarUrl ? (
               <img src={form.avatarUrl} alt="avatar" style={{ width: 70, height: 70, borderRadius: "50%", objectFit: "cover" }} />
@@ -74,7 +147,7 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
             {isEditing && (
               <label style={{ position: "absolute", bottom: 0, right: 0, background: "#E91E63", color: "#fff", padding: 6, borderRadius: "50%", cursor: "pointer" }}>
                 <Camera size={14} />
-                <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
+                <input type="file" accept="image/*" onChange={onFileChange} style={{ display: "none" }} />
               </label>
             )}
           </div>
@@ -91,8 +164,6 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
             <button onClick={logout} className="btn-ghost" style={{ color: "#FF3D8A" }}>ออกจากระบบ</button>
           </div>
         </div>
-
-        {uploading && <p style={{ fontSize: 12, color: "#B8AEDB" }}>กำลังอัปโหลดรูปภาพ...</p>}
 
         {/* โหมดแก้ไขข้อมูล */}
         {isEditing ? (
@@ -142,7 +213,6 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
             </button>
           </form>
         ) : (
-          /* โหมดแสดงผลปกติ */
           <div style={{ marginTop: 12 }}>
             {user.bio && <p style={{ fontSize: 14, color: "#D1C9EF", marginBottom: 12 }}>{user.bio}</p>}
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 13 }}>

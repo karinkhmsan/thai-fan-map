@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { MapContainer, GeoJSON, CircleMarker, Tooltip } from "react-leaflet";
+import { MapContainer, GeoJSON, CircleMarker, Tooltip, useMap } from "react-leaflet";
+import L from "leaflet";
 import * as topojson from "topojson-client";
 import provincesRaw from "@/data/provinces-th.json";
 
@@ -25,6 +26,20 @@ function findFeatureProvinceName(feature) {
       if (match) return match.name;
     }
   }
+  return null;
+}
+
+// ซูม/เลื่อนแผนที่ให้พอดีกับขอบเขตประเทศไทยอัตโนมัติ แล้วล็อกไม่ให้ซูมออกไกลกว่านี้
+function FitBounds({ geo }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!geo) return;
+    const bounds = L.geoJSON(geo).getBounds();
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [12, 12] });
+      map.setMinZoom(map.getZoom());
+    }
+  }, [geo, map]);
   return null;
 }
 
@@ -62,6 +77,8 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
         zoomControl={true}
         scrollWheelZoom={true}
       >
+        <FitBounds geo={geo} />
+
         {geo && (
           <GeoJSON
             data={geo}

@@ -1,5 +1,4 @@
 node_modules
 .next
 .env
-public/data/thailand-provinces.geojson
-data/districts-th.json
+

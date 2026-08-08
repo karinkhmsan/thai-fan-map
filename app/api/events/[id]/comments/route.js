@@ -6,6 +6,12 @@ import { getCurrentUser } from "@/lib/auth.mjs";
 export async function POST(req, { params }) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "กรุณาเข้าสู่ระบบก่อนคอมเมนต์" }, { status: 401 });
+
+  // แทรกการเช็กแบนตรงนี้ครับ
+  if (user.isBanned) {
+    return NextResponse.json({ error: "บัญชีของคุณถูกระงับการใช้งาน ไม่สามารถคอมเมนต์ได้" }, { status: 403 });
+  }
+
   const { text } = await req.json();
   if (!text?.trim()) return NextResponse.json({ error: "พิมพ์ข้อความก่อนส่ง" }, { status: 400 });
 

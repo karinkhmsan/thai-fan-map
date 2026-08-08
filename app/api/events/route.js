@@ -13,6 +13,12 @@ export async function POST(req) {
   if (!user) {
     return NextResponse.json({ error: "กรุณาเข้าสู่ระบบก่อนโพสต์งาน" }, { status: 401 });
   }
+
+  // แทรกการเช็กแบนตรงนี้
+  if (user.isBanned) {
+    return NextResponse.json({ error: "บัญชีของคุณถูกระงับการใช้งาน ไม่สามารถสร้างโพสต์ได้" }, { status: 403 });
+  }
+
   const body = await req.json();
   const { title, category, province, district, description, images } = body;
 

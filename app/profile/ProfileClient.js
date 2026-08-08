@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Trash2, Camera, Link as LinkIcon, Edit3, Check, X } from "lucide-react";
@@ -25,10 +26,11 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const logout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-    router.refresh();
-  };
+  await fetch("/api/auth/logout", { method: "POST" });
+  await signOut({ redirect: false });
+  router.push("/");
+  router.refresh();
+};
 
   const remove = async (id) => {
     if (!confirm("ยืนยันลบโพสต์นี้?")) return;

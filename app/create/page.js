@@ -120,7 +120,7 @@ export default function CreatePage() {
             placeholder="บอกเล่ารายละเอียดงาน สถานที่ วันเวลา กิจกรรมภายในงาน..." style={{ resize: "vertical", fontFamily: "inherit" }} />
         </Field>
 
-        <Field label="รูปภาพในงาน / รูปคอสเพลย์ (สูงสุด 6 รูป)">
+        <Field label="รูปภาพ (สูงสุด 6 รูป)">
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {images.map((img, i) => (
               <div key={i} style={{ position: "relative", width: 84, height: 84 }}>

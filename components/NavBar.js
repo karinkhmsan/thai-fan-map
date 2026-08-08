@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Search, Plus } from "lucide-react";
+import { MapPin, Search, Plus, Shield } from "lucide-react"; // 1. เพิ่ม Shield ตรงนี้
 
 export default function NavBar({ initialUser }) {
   const [user, setUser] = useState(initialUser);
@@ -54,13 +54,24 @@ export default function NavBar({ initialUser }) {
           )}
         </div>
 
+        {/* 2. ปุ่ม Admin (เพิ่มตรงนี้) */}
+        {user && user.role === "ADMIN" && (
+          <Link href="/admin" className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6, color: "#FF3D8A", border: "1px solid rgba(255,61,138,0.3)" }}>
+            <Shield size={16} /> Admin
+          </Link>
+        )}
+
         <Link href="/create" className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <Plus size={16} /> สร้างโพสต์
         </Link>
 
         {user ? (
-          <Link href="/profile" style={{ width: 36, height: 36, borderRadius: "50%", background: user.avatarColor, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 14 }}>
-            {user.username[0]}
+          <Link href="/profile" style={{ width: 36, height: 36, borderRadius: "50%", background: user.avatarUrl ? "transparent" : user.avatarColor, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 14, overflow: "hidden" }}>
+            {user.avatarUrl ? (
+              <img src={user.avatarUrl} alt="profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              user.username[0]
+            )}
           </Link>
         ) : (
           <Link href="/login" className="btn-ghost">เข้าสู่ระบบ</Link>

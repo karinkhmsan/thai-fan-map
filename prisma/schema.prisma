@@ -18,6 +18,13 @@ model User {
   username     String    @unique
   passwordHash String
   avatarColor  String
+  avatarUrl    String?   // รูปโปรไฟล์ (URL จาก R2)
+  bio          String?   // ประวัติส่วนตัว/คำอธิบาย
+  facebookUrl  String?   // ลิงก์ Facebook
+  instagramUrl String?   // ลิงก์ Instagram
+  tiktokUrl    String?   // ลิงก์ TikTok
+  role         String    @default("USER") // "USER" หรือ "ADMIN"
+  isBanned     Boolean   @default(false)  // สถานะแบน (true = โดนแบน)
   createdAt    DateTime  @default(now())
   events       Event[]
   comments     Comment[]

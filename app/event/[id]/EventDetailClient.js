@@ -175,18 +175,19 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
 
 function ImageGrid({ images, onOpen }) {
   const n = images.length;
+  const gridHeight = "clamp(320px, 38vw, 560px)"; // มือถือ = 320px ขั้นต่ำ, เดสก์ท็อปยืดตามความกว้าง
 
   if (n === 1) {
     return (
       <div onClick={() => onOpen(0)} style={{ position: "relative", overflow: "hidden", cursor: "zoom-in" }}>
-        <img src={images[0]} alt="" style={{ width: "100%", maxHeight: 440, objectFit: "cover", display: "block" }} />
+        <img src={images[0]} alt="" style={{ width: "100%", height: "clamp(320px, 45vw, 640px)", objectFit: "cover", display: "block" }} />
       </div>
     );
   }
 
   if (n === 2) {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, height: 300, position: "relative", overflow: "hidden" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, height: gridHeight, position: "relative", overflow: "hidden" }}>
         {images.map((img, i) => (
           <img key={i} src={img} alt="" onClick={() => onOpen(i)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
         ))}
@@ -196,7 +197,7 @@ function ImageGrid({ images, onOpen }) {
 
   if (n === 3) {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320, position: "relative", overflow: "hidden" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: gridHeight, position: "relative", overflow: "hidden" }}>
         <img src={images[0]} alt="" onClick={() => onOpen(0)} style={{ gridRow: "1 / 3", width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
         <img src={images[1]} alt="" onClick={() => onOpen(1)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
         <img src={images[2]} alt="" onClick={() => onOpen(2)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />
@@ -206,7 +207,7 @@ function ImageGrid({ images, onOpen }) {
 
   const shown = images.slice(0, 4);
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320, position: "relative", overflow: "hidden" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: gridHeight, position: "relative", overflow: "hidden" }}>
       {shown.map((img, i) => (
         <div key={i} onClick={() => onOpen(i)} style={{ position: "relative", overflow: "hidden", cursor: "zoom-in" }}>
           <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />

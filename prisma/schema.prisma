@@ -16,8 +16,8 @@ datasource db {
 model User {
   id           String    @id @default(uuid())
   username     String    @unique
-  passwordHash String
-  avatarColor  String
+  passwordHash String?
+  avatarColor  String?
   avatarUrl    String?   // รูปโปรไฟล์ (URL จาก R2)
   bio          String?   // ประวัติส่วนตัว/คำอธิบาย
   facebookUrl  String?   // ลิงก์ Facebook

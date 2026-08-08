@@ -68,7 +68,7 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
   );
 
   return (
-    <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+    <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 0 }}>
       <MapContainer
         center={[13.7563, 100.5018]}
         zoom={6}

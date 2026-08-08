@@ -129,8 +129,10 @@ export default function HomeClient({ initialEvents }) {
       <style jsx>{`
         .map-page {
           position: relative;
+          isolation: isolate;
           width: 100%;
           height: calc(100vh - var(--navbar-h, 112px));
+          height: calc(100dvh - var(--navbar-h, 112px));
           min-height: 420px;
           overflow: hidden;
         }
@@ -140,7 +142,8 @@ export default function HomeClient({ initialEvents }) {
           top: 14px;
           left: 14px;
           right: 14px;
-          z-index: 10;
+          z-index: 30;
+          transform: translateZ(0);
           display: flex;
           flex-direction: column;
           gap: 10px;
@@ -184,7 +187,8 @@ export default function HomeClient({ initialEvents }) {
           right: 14px;
           bottom: 14px;
           width: 300px;
-          z-index: 10;
+          z-index: 30;
+          transform: translateZ(0);
           background: rgba(21, 15, 46, 0.9);
           backdrop-filter: blur(12px);
           display: flex;
@@ -331,11 +335,11 @@ export default function HomeClient({ initialEvents }) {
             display: flex;
             align-items: center;
             gap: 6px;
-            position: absolute;
-            bottom: 16px;
+            position: fixed;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
             left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
+            transform: translateX(-50%) translateZ(0);
+            z-index: 30;
             background: linear-gradient(135deg, #ff3d8a, #7f49ff);
             color: #fff;
             border: none;

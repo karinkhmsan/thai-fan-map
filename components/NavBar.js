@@ -56,7 +56,7 @@ export default function NavBar({ initialUser }) {
           {/* กลุ่มปุ่มฝั่งขวา */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             
-            {/* ปุ่ม Admin (แสดงเมื่อผู้ใช้เป็น Admin) */}
+            {/* ปุ่ม Admin */}
             {user && user.role === "ADMIN" && (
               <Link href="/admin" className="btn-ghost" style={{ padding: "6px 10px", fontSize: 12, display: "flex", alignItems: "center", gap: 4, color: "#FF3D8A", border: "1px solid rgba(255,61,138,0.3)" }}>
                 <Shield size={14} /> <span className="mobile-hide">Admin</span>
@@ -64,7 +64,7 @@ export default function NavBar({ initialUser }) {
             )}
 
             {/* ปุ่มสร้างโพสต์ */}
-            <Link href="/create" className="btn-primary" style={{ padding: "6px 12px", fontSize 13, display: "flex", alignItems: "center", gap: 4 }}>
+            <Link href="/create" className="btn-primary" style={{ padding: "6px 12px", fontSize: 13, display: "flex", alignItems: "center", gap: 4 }}>
               <Plus size={15} /> <span className="mobile-hide">สร้างโพสต์</span>
             </Link>
 
@@ -101,7 +101,7 @@ export default function NavBar({ initialUser }) {
           </div>
         </div>
 
-        {/* แถบล่าง: กล่องค้นหา (ขยายเต็มความกว้างจอมือถือ) */}
+        {/* แถบล่าง: กล่องค้นหา */}
         <div style={{ position: "relative", width: "100%" }}>
           <Search size={15} style={{ position: "absolute", left: 12, top: 10, color: "#8177AE" }} />
           <input 

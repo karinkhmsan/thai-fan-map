@@ -52,8 +52,8 @@ select.input option {
 }
 .chip.active { color: #fff; }
 
-/* leaflet ปรับให้เข้ากับธีมมืด */
-.leaflet-container { background: #1B1440 !important; }
+/* leaflet ปรับสไตล์ปุ่ม/attribution ให้เข้ากับธีมเว็บ (ตัวแผนที่เองใช้สีจริงจาก tile) */
+.leaflet-container { background: #E8E6E1 !important; }
 .leaflet-control-attribution {
   background: rgba(21,15,46,0.75) !important;
   color: #8177AE !important;

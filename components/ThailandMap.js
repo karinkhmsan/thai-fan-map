@@ -78,9 +78,9 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
         zoomControl={false}
         scrollWheelZoom={true}
       >
-        {/* แผนที่จริง (ถนน/เมือง/ป้ายชื่อ) โทนมืดให้เข้ากับธีมเว็บ */}
+        {/* แผนที่จริง สีสัน มีถนน แม่น้ำ ทะเล และชื่อเมือง/จังหวัดให้เห็นชัดเจน */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           subdomains="abcd"
           maxZoom={20}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -96,12 +96,13 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
             style={(feature) => {
               const name = findFeatureProvinceName(feature);
               const hasEvents = name && eventsByProvince[name]?.length;
-              const color = hasEvents ? catColor(eventsByProvince[name][0].category) : "rgba(127,119,221,0.6)";
+              const color = hasEvents ? catColor(eventsByProvince[name][0].category) : "#7F49FF";
               return {
                 color,
-                weight: hasEvents ? 1.6 : 1,
-                fillColor: hasEvents ? catColor(eventsByProvince[name][0].category) : "#7F77DD",
-                fillOpacity: hasEvents ? 0.32 : 0.05,
+                weight: hasEvents ? 2 : 1.4,
+                opacity: hasEvents ? 0.9 : 0.55,
+                fillColor: hasEvents ? catColor(eventsByProvince[name][0].category) : "#7F49FF",
+                fillOpacity: hasEvents ? 0.28 : 0.04,
               };
             }}
             onEachFeature={(feature, layer) => {
@@ -109,8 +110,8 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
               if (name) {
                 layer.bindTooltip(`${name} · ${eventsByProvince[name]?.length || 0} งาน`, { sticky: true });
                 layer.on("click", () => onPinClick(name));
-                layer.on("mouseover", () => layer.setStyle({ fillOpacity: 0.7 }));
-                layer.on("mouseout", () => layer.setStyle({ fillOpacity: eventsByProvince[name]?.length ? 0.32 : 0.05 }));
+                layer.on("mouseover", () => layer.setStyle({ fillOpacity: 0.55 }));
+                layer.on("mouseout", () => layer.setStyle({ fillOpacity: eventsByProvince[name]?.length ? 0.28 : 0.04 }));
               }
             }}
           />

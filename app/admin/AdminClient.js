@@ -64,6 +64,15 @@ export default function AdminPage() {
     loadData();
   };
 
+  const saveAmount = async (donationId, amount) => {
+    await fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "updateDonationAmount", donationId, amount }),
+    });
+    loadData();
+  };
+
   if (loading) return <div style={{ color: "#fff", padding: 40, textAlign: "center" }}>กำลังโหลดข้อมูล Admin...</div>;
 
   return (
@@ -173,8 +182,21 @@ export default function AdminPage() {
                 />
                 <div style={{ flex: 1, minWidth: 140 }}>
                   <div style={{ fontWeight: 600, fontSize: 14 }}>{d.name}</div>
-                  <div style={{ fontSize: 12, color: "#8177AE" }}>
-                    {d.amount ? `แจ้งยอด ${d.amount} บาท · ` : ""}{d.createdAt}
+                  <div style={{ fontSize: 12, color: "#8177AE", marginTop: 2 }}>{d.createdAt}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4 }}>
+                    <span style={{ fontSize: 12, color: "#8177AE" }}>ยอดที่แจ้ง:</span>
+                    <input
+                      key={d.id + d.amount}
+                      type="number"
+                      defaultValue={d.amount ?? ""}
+                      onBlur={(e) => {
+                        const val = e.target.value ? Number(e.target.value) : null;
+                        if (val !== d.amount) saveAmount(d.id, val);
+                      }}
+                      placeholder="ไม่ได้แจ้งไว้"
+                      style={{ width: 90, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#E4DEFF", fontSize: 12, padding: "3px 6px" }}
+                    />
+                    <span style={{ fontSize: 12, color: "#8177AE" }}>บาท</span>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>

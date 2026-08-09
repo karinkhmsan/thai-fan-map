@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.mjs";
 import { getCurrentUser } from "@/lib/auth.mjs";
-import { listReportedComments, adminDeleteComment, listPendingDonations, setDonationStatus } from "@/lib/db.mjs";
+import { listReportedComments, adminDeleteComment, listPendingDonations, setDonationStatus, updateDonationAmount } from "@/lib/db.mjs";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -31,7 +31,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 403 });
   }
 
-  const { action, userId, eventId, commentId, donationId } = await req.json();
+  const { action, userId, eventId, commentId, donationId, amount } = await req.json();
 
   if (action === "toggleBan") {
     const target = await prisma.user.findUnique({ where: { id: userId } });
@@ -62,6 +62,11 @@ export async function POST(req) {
 
   if (action === "rejectDonation") {
     await setDonationStatus(donationId, "REJECTED");
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === "updateDonationAmount") {
+    await updateDonationAmount(donationId, amount ? Math.round(Number(amount)) : null);
     return NextResponse.json({ success: true });
   }
 

@@ -208,7 +208,7 @@ export default function DonateBox({ currentUser }) {
               style={{ marginBottom: 12 }}
             />
 
-            <label style={{ display: "block", fontSize: 12, color: "#B8AEDB", marginBottom: 6 }}>จำนวนเงินที่โอน (บาท) — ใช้ให้แอดมินเช็คกับสลิปเท่านั้น ไม่แสดงต่อสาธารณะ</label>
+            <label style={{ display: "block", fontSize: 12, color: "#B8AEDB", marginBottom: 6 }}>จำนวนเงินที่โอน (บาท) — ใช้ให้แอดมินเช็คกับสลิปเท่านั้น</label>
             <input
               className="input"
               type="number"

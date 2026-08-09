@@ -73,3 +73,14 @@ select.input option {
     display: none !important;
   }
 }
+
+/* กว้างขึ้นเฉพาะจอใหญ่ (PC/แท็บเล็ต) มือถือยังคงขนาดเดิม (inline style เป็นค่าตั้งต้น) */
+@media (min-width: 700px) {
+  .donate-card {
+    max-width: 640px !important;
+  }
+  .stats-modal {
+    max-width: 760px !important;
+    max-height: 85vh !important;
+  }
+}

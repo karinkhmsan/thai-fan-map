@@ -26,7 +26,7 @@ export default function StatsModal({ open, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="card"
+        className="card stats-modal"
         style={{ width: "100%", maxWidth: 460, maxHeight: "80vh", display: "flex", flexDirection: "column", background: "#191332", overflow: "hidden" }}
       >
         {/* หัว modal */}

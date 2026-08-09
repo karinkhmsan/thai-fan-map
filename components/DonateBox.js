@@ -81,7 +81,7 @@ export default function DonateBox({ currentUser }) {
   };
 
   return (
-    <div className="card" style={{ padding: 24, maxWidth: 420, margin: "0 auto", textAlign: "center" }}>
+    <div className="card donate-card" style={{ padding: 24, maxWidth: 420, margin: "0 auto", textAlign: "center" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 6 }}>
         <Heart size={20} color="#FF3D8A" fill="#FF3D8A" />
         <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>สนับสนุน FanQuestMap</h2>

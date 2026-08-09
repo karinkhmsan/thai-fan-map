@@ -2,12 +2,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, Trash2, Ban, CheckCircle, Flag } from "lucide-react";
+import { Shield, Trash2, Ban, CheckCircle, Flag, Receipt, X } from "lucide-react";
 
 export default function AdminPage() {
   const router = useRouter();
-  const [data, setData] = useState({ users: [], events: [], reportedComments: [] });
+  const [data, setData] = useState({ users: [], events: [], reportedComments: [], pendingDonations: [] });
   const [loading, setLoading] = useState(true);
+  const [slipPreview, setSlipPreview] = useState(null);
 
   const loadData = async () => {
     const res = await fetch("/api/admin");
@@ -50,6 +51,15 @@ export default function AdminPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "deleteComment", commentId }),
+    });
+    loadData();
+  };
+
+  const reviewDonation = async (donationId, action) => {
+    await fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, donationId }),
     });
     loadData();
   };
@@ -144,6 +154,49 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* รายการแจ้งโอนเงินที่รอตรวจสอบ */}
+      <div className="card" style={{ padding: 20, marginTop: 24 }}>
+        <h3 style={{ fontSize: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+          <Receipt size={15} style={{ color: "#FFC145" }} /> รอตรวจสอบสลิปสนับสนุน ({data.pendingDonations.length})
+        </h3>
+        {data.pendingDonations.length === 0 ? (
+          <p style={{ fontSize: 13, color: "#5A5182" }}>ยังไม่มีรายการรอตรวจสอบ</p>
+        ) : (
+          <div style={{ display: "grid", gap: 10 }}>
+            {data.pendingDonations.map((d) => (
+              <div key={d.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 14px", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <img
+                  src={d.slipUrl}
+                  alt="สลิป"
+                  onClick={() => setSlipPreview(d.slipUrl)}
+                  style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, cursor: "zoom-in", flexShrink: 0 }}
+                />
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{d.name}</div>
+                  <div style={{ fontSize: 12, color: "#8177AE" }}>
+                    {d.amount ? `แจ้งยอด ${d.amount} บาท · ` : ""}{d.createdAt}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={() => reviewDonation(d.id, "approveDonation")}
+                    style={{ background: "#4CAF50", color: "#fff", border: "none", padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}
+                  >
+                    <CheckCircle size={13} /> ยืนยัน
+                  </button>
+                  <button
+                    onClick={() => reviewDonation(d.id, "rejectDonation")}
+                    style={{ background: "none", border: "1px solid rgba(255,61,138,0.4)", color: "#FF3D8A", padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12 }}
+                  >
+                    ปฏิเสธ
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* ตารางความคิดเห็นที่ถูกรายงาน */}
       <div className="card" style={{ padding: 20, marginTop: 24 }}>
         <h3 style={{ fontSize: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
@@ -183,6 +236,16 @@ export default function AdminPage() {
           </div>
         )}
       </div>
+
+      {/* ดูสลิปแบบเต็มขนาด */}
+      {slipPreview && (
+        <div onClick={() => setSlipPreview(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <button onClick={() => setSlipPreview(null)} style={{ position: "absolute", top: 18, right: 20, background: "rgba(255,255,255,0.1)", border: "none", borderRadius: "50%", width: 40, height: 40, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <X size={20} />
+          </button>
+          <img src={slipPreview} alt="สลิป" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "90vw", maxHeight: "88vh", objectFit: "contain", borderRadius: 6 }} />
+        </div>
+      )}
     </div>
   );
 }

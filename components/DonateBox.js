@@ -191,6 +191,7 @@ export default function DonateBox({ currentUser }) {
           ถ้าไม่สะดวกผ่าน EasyDonate ด้านบน สแกน QR พร้อมเพย์ได้เลย แต่ระบบไม่รู้อัตโนมัติว่าใครโอนมา
           ต้องแนบสลิปไว้ให้แอดมินตรวจสอบและกดยืนยันก่อน ถึงจะขึ้นชื่อในรายชื่อผู้สนับสนุน (ดูได้จากเมนู 3 ขีด → สถิติ)
         </p>
+        <h3 style={{ fontSize: 14, fontWeight: 600, margin: "0 0 4px" }}>เมื่อได้บริจาคหรือสนับสนุน แสดงว่าคุณยอมรับ ข้อกำหนดการใช้งานของเรา</h3>
 
         {submitted ? (
           <div style={{ background: "rgba(76,175,80,0.12)", border: "1px solid rgba(76,175,80,0.3)", borderRadius: 10, padding: "12px 14px", fontSize: 13, color: "#4CAF50", textAlign: "center" }}>

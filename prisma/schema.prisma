@@ -30,6 +30,7 @@ model User {
   events       Event[]
   comments     Comment[]
   commentReports CommentReport[]
+  eventReports EventReport[]
   donations    Donation[]
 }
 
@@ -57,12 +58,27 @@ model Event {
   district    String    @default("")
   description String
   images      String[]  @default([])
+  lat         Float?    // ตำแหน่งปักหมุดแม่นยำ (ไม่บังคับ) — เฉพาะสถานที่สาธารณะเท่านั้นตามข้อกำหนด
+  lng         Float?
   authorId    String
   author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   comments    Comment[]
+  reports     EventReport[]
 
   @@index([province])
+}
+
+// รายงานโพสต์ที่ไม่เหมาะสม (รวมถึงกรณีปักหมุดผิดเงื่อนไข เช่น ปักที่พักส่วนตัว หรือใช้ระบุตัวบุคคล)
+model EventReport {
+  id         String   @id @default(uuid())
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  reporterId String
+  reporter   User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([eventId, reporterId])
 }
 
 model Comment {

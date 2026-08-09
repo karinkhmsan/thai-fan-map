@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.mjs";
 import { getCurrentUser } from "@/lib/auth.mjs";
-import { listReportedComments, adminDeleteComment, listPendingDonations, setDonationStatus, updateDonationAmount } from "@/lib/db.mjs";
+import { listReportedComments, adminDeleteComment, listPendingDonations, setDonationStatus, updateDonationAmount, listReportedEvents, dismissEventReports, clearEventPin } from "@/lib/db.mjs";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -21,8 +21,9 @@ export async function GET() {
 
   const reportedComments = await listReportedComments();
   const pendingDonations = await listPendingDonations();
+  const reportedEvents = await listReportedEvents();
 
-  return NextResponse.json({ users, events, reportedComments, pendingDonations });
+  return NextResponse.json({ users, events, reportedComments, pendingDonations, reportedEvents });
 }
 
 export async function POST(req) {
@@ -67,6 +68,16 @@ export async function POST(req) {
 
   if (action === "updateDonationAmount") {
     await updateDonationAmount(donationId, amount ? Math.round(Number(amount)) : null);
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === "dismissEventReport") {
+    await dismissEventReports(eventId);
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === "clearEventPin") {
+    await clearEventPin(eventId);
     return NextResponse.json({ success: true });
   }
 

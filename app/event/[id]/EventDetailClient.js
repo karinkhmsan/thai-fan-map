@@ -1,9 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil, X, ChevronLeft, ChevronRight, Flag } from "lucide-react";
+import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil, X, ChevronLeft, ChevronRight, Flag, Navigation } from "lucide-react";
 import { catInfo } from "@/lib/categories";
+
+const EventLocationMap = dynamic(() => import("@/components/EventLocationMap"), { ssr: false });
 
 export default function EventDetailClient({ event: initialEvent, currentUser }) {
   const [event, setEvent] = useState(initialEvent);
@@ -11,10 +14,19 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
   const [error, setError] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [reportedIds, setReportedIds] = useState(new Set());
+  const [eventReported, setEventReported] = useState(false);
   const router = useRouter();
   const cat = catInfo(event.category);
   const isOwner = currentUser && currentUser.id === event.authorId;
   const isAdmin = currentUser && currentUser.role === "ADMIN";
+  const hasPin = event.lat != null && event.lng != null;
+
+  const reportPost = async () => {
+    if (!currentUser) { router.push("/login"); return; }
+    if (!confirm("ยืนยันรายงานโพสต์นี้ให้แอดมินตรวจสอบ?")) return;
+    const res = await fetch(`/api/events/${event.id}/report`, { method: "POST" });
+    if (res.ok) setEventReported(true);
+  };
 
   const sendComment = async () => {
     if (!comment.trim()) return;
@@ -107,6 +119,16 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
                 </button>
               </div>
             )}
+            {!isOwner && currentUser && (
+              <button
+                onClick={reportPost}
+                disabled={eventReported}
+                title={eventReported ? "รายงานแล้ว" : "รายงานโพสต์นี้"}
+                style={{ background: "none", border: "none", color: eventReported ? "#5A5182" : "#8177AE", cursor: eventReported ? "default" : "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, flexShrink: 0 }}
+              >
+                <Flag size={13} /> {eventReported ? "รายงานแล้ว" : "รายงาน"}
+              </button>
+            )}
           </div>
 
           <h1 style={{ fontSize: 19, fontWeight: 600, margin: "14px 0 6px" }}>{event.title}</h1>
@@ -119,6 +141,20 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
           </div>
 
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "#E4DEFF", whiteSpace: "pre-wrap", margin: "0 0 16px" }}>{event.description}</p>
+
+          {hasPin && (
+            <div style={{ marginBottom: 16 }}>
+              <EventLocationMap lat={event.lat} lng={event.lng} />
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${event.lat},${event.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 8, fontSize: 12, color: "#7F49FF", textDecoration: "none" }}
+              >
+                <Navigation size={12} /> นำทางไปยังจุดนี้
+              </a>
+            </div>
+          )}
         </div>
 
         {event.images.length > 0 && (

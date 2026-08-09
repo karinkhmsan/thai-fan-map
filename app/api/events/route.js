@@ -20,7 +20,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { title, category, province, district, description, images } = body;
+  const { title, category, province, district, description, images, lat, lng } = body;
 
   if (!title?.trim() || !description?.trim() || !province) {
     return NextResponse.json({ error: "กรอกข้อมูลให้ครบ (ชื่องาน จังหวัด รายละเอียด)" }, { status: 400 });
@@ -34,6 +34,8 @@ export async function POST(req) {
     district: district?.trim() || "",
     description: description.trim(),
     images: Array.isArray(images) ? images.slice(0, 6) : [],
+    lat: typeof lat === "number" ? lat : null,
+    lng: typeof lng === "number" ? lng : null,
     authorId: user.id,
     authorName: user.username,
     createdAt: new Date().toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" }),

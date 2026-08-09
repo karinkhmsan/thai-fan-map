@@ -1,11 +1,15 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, ZoomControl, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Marker, Tooltip, ZoomControl, useMap, useMapEvents } from "react-leaflet";
+import { useRouter } from "next/navigation";
 import L from "leaflet";
 import * as topojson from "topojson-client";
 import provincesRaw from "@/data/provinces-th.json";
 
 const PROVINCES = provincesRaw.map(([name, lat, lon, nameEn]) => ({ name, lat, lon, nameEn }));
+
+// ต่ำกว่าซูมระดับนี้ ยังไม่โชว์หมุดรูปรายอีเวนต์ (กันไม่ให้เห็นตำแหน่งแม่นยำง่ายเกินไปตอนซูมออกไกลๆ)
+const EXACT_PIN_MIN_ZOOM = 11;
 
 // property key ที่ไฟล์ GeoJSON ต้นทาง (apisit/thailand.json) ใช้เก็บชื่อจังหวัด — เป็นภาษาอังกฤษ
 // เช่น "Mae Hong Son" — เผื่อไฟล์แหล่งอื่นใช้คีย์ชื่ออื่น เลยลองไล่หลายคีย์ไว้ด้วย
@@ -42,9 +46,31 @@ function FitBounds({ geo }) {
   return null;
 }
 
-export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) {
+// ติดตามระดับซูมปัจจุบัน ใช้ตัดสินใจว่าจะโชว์หมุดรูปรายอีเวนต์หรือยัง
+function ZoomWatcher({ onZoom }) {
+  const map = useMapEvents({ zoomend: () => onZoom(map.getZoom()) });
+  useEffect(() => { onZoom(map.getZoom()); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
+
+function pinIcon(imageUrl) {
+  return new L.DivIcon({
+    html: `
+      <div style="position:relative;width:48px;height:48px;">
+        <div style="position:absolute;inset:0;border-radius:50%;background:#191332 url('${imageUrl}') center/cover;border:3px solid #FF3D8A;box-shadow:0 2px 10px rgba(0,0,0,0.5);"></div>
+        <div style="position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #FF3D8A;"></div>
+      </div>`,
+    className: "",
+    iconSize: [48, 54],
+    iconAnchor: [24, 54],
+  });
+}
+
+export default function ThailandMap({ eventsByProvince, pinnedEvents = [], catColor, onPinClick }) {
   const [geo, setGeo] = useState(null);
   const [geoFailed, setGeoFailed] = useState(false);
+  const [zoom, setZoom] = useState(6);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("/data/thailand-provinces.geojson")
@@ -89,6 +115,7 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
         <ZoomControl position="bottomleft" />
 
         <FitBounds geo={geo} />
+        <ZoomWatcher onZoom={setZoom} />
 
         {geo && (
           <GeoJSON
@@ -132,6 +159,19 @@ export default function ThailandMap({ eventsByProvince, catColor, onPinClick }) 
             </CircleMarker>
           );
         })}
+
+        {/* หมุดรูปรายอีเวนต์ (เฉพาะโพสต์ที่ปักหมุดแม่นยำไว้) โผล่เฉพาะตอนซูมเข้าใกล้พอ
+            กันไม่ให้เห็นตำแหน่งแม่นยำง่ายเกินไปตอนดูภาพรวมทั้งประเทศ */}
+        {zoom >= EXACT_PIN_MIN_ZOOM && pinnedEvents.map((e) => (
+          <Marker
+            key={e.id}
+            position={[e.lat, e.lng]}
+            icon={pinIcon(e.images?.[0] || "")}
+            eventHandlers={{ click: () => router.push(`/event/${e.id}`) }}
+          >
+            <Tooltip direction="top" offset={[0, -50]}>{e.title}</Tooltip>
+          </Marker>
+        ))}
       </MapContainer>
 
       {geoFailed && (

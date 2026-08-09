@@ -13,6 +13,9 @@ export default async function HomePage() {
       province: true,
       district: true,
       category: true,
+      lat: true,
+      lng: true,
+      images: true,
     },
     orderBy: { createdAt: "desc" },
   });

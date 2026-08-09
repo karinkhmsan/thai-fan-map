@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, Trash2, Ban, CheckCircle, Flag, Receipt, X } from "lucide-react";
+import { Shield, Trash2, Ban, CheckCircle, Flag, Receipt, X, MapPinOff } from "lucide-react";
 
 export default function AdminPage() {
   const router = useRouter();
-  const [data, setData] = useState({ users: [], events: [], reportedComments: [], pendingDonations: [] });
+  const [data, setData] = useState({ users: [], events: [], reportedComments: [], pendingDonations: [], reportedEvents: [] });
   const [loading, setLoading] = useState(true);
   const [slipPreview, setSlipPreview] = useState(null);
 
@@ -69,6 +69,25 @@ export default function AdminPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "updateDonationAmount", donationId, amount }),
+    });
+    loadData();
+  };
+
+  const dismissReport = async (eventId) => {
+    await fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "dismissEventReport", eventId }),
+    });
+    loadData();
+  };
+
+  const clearPin = async (eventId) => {
+    if (!confirm("ยืนยันลบเฉพาะหมุดตำแหน่งของโพสต์นี้? (โพสต์ยังอยู่)")) return;
+    await fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "clearEventPin", eventId }),
     });
     loadData();
   };
@@ -211,6 +230,52 @@ export default function AdminPage() {
                     style={{ background: "none", border: "1px solid rgba(255,61,138,0.4)", color: "#FF3D8A", padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12 }}
                   >
                     ปฏิเสธ
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* โพสต์ที่ถูกรายงาน (รวมกรณีปักหมุดผิดเงื่อนไข) */}
+      <div className="card" style={{ padding: 20, marginTop: 24 }}>
+        <h3 style={{ fontSize: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+          <Flag size={15} style={{ color: "#FF3D8A" }} /> โพสต์ที่ถูกรายงาน ({data.reportedEvents.length})
+        </h3>
+        {data.reportedEvents.length === 0 ? (
+          <p style={{ fontSize: 13, color: "#5A5182" }}>ยังไม่มีโพสต์ที่ถูกรายงาน</p>
+        ) : (
+          <div style={{ display: "grid", gap: 10 }}>
+            {data.reportedEvents.map((e) => (
+              <div key={e.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 14px", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <Link href={`/event/${e.id}`} target="_blank" style={{ fontWeight: 600, fontSize: 14, color: "#fff", textDecoration: "none" }}>{e.title}</Link>
+                  <div style={{ fontSize: 12, color: "#8177AE", marginTop: 2 }}>
+                    โดย {e.authorName} · ถูกรายงาน {e.reportCount} ครั้ง · {e.createdAt}
+                    {e.hasPin && <span style={{ color: "#FFC145" }}> · มีหมุดตำแหน่งแม่นยำ</span>}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {e.hasPin && (
+                    <button
+                      onClick={() => clearPin(e.id)}
+                      style={{ background: "none", border: "1px solid rgba(255,193,69,0.4)", color: "#FFC145", padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}
+                    >
+                      <MapPinOff size={13} /> ลบเฉพาะหมุด
+                    </button>
+                  )}
+                  <button
+                    onClick={() => dismissReport(e.id)}
+                    style={{ background: "none", border: "1px solid rgba(255,255,255,0.15)", color: "#B8AEDB", padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12 }}
+                  >
+                    เพิกเฉย
+                  </button>
+                  <button
+                    onClick={() => deleteEvent(e.id)}
+                    style={{ background: "#FF3D8A", color: "#fff", border: "none", padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}
+                  >
+                    <Trash2 size={13} /> ลบโพสต์
                   </button>
                 </div>
               </div>

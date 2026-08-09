@@ -25,6 +25,11 @@ export default function HomeClient({ initialEvents }) {
     return map;
   }, [filteredEvents]);
 
+  const pinnedEvents = useMemo(
+    () => filteredEvents.filter((e) => e.lat != null && e.lng != null),
+    [filteredEvents]
+  );
+
   const goToEvent = (id) => router.push(`/event/${id}`);
 
   const PostItem = ({ e }) => (
@@ -44,6 +49,7 @@ export default function HomeClient({ initialEvents }) {
       {/* แผนที่จริงเต็มจอ */}
       <ThailandMap
         eventsByProvince={eventsByProvince}
+        pinnedEvents={pinnedEvents}
         catColor={(id) => catInfo(id).color}
         onPinClick={(name) => router.push(`/province/${encodeURIComponent(name)}`)}
       />

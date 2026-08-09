@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Plus, X } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import { compressImages } from "@/lib/compressImage";
 import provincesRaw from "@/data/provinces-th.json";
 
+const PinPicker = dynamic(() => import("@/components/PinPicker"), { ssr: false });
+
 const PROVINCES = provincesRaw.map(([name]) => name);
+const PROVINCE_CENTER = Object.fromEntries(provincesRaw.map(([name, lat, lon]) => [name, { lat, lon }]));
 const MAX_IMAGES = 6;
 
 export default function CreatePage() {
@@ -18,6 +22,8 @@ export default function CreatePage() {
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]); // dataURL previews (local only)
   const [files, setFiles] = useState([]); // actual File objects to upload
+  const [pinLat, setPinLat] = useState(null);
+  const [pinLng, setPinLng] = useState(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [preparing, setPreparing] = useState(false);
@@ -73,7 +79,7 @@ export default function CreatePage() {
       const res = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, category, province, district, description, images: urls }),
+        body: JSON.stringify({ title, category, province, district, description, images: urls, lat: pinLat, lng: pinLng }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -145,6 +151,16 @@ export default function CreatePage() {
             )}
             <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
           </div>
+        </Field>
+
+        <Field label="ปักหมุดตำแหน่งแม่นยำ (ไม่บังคับ)">
+          <PinPicker
+            lat={pinLat}
+            lng={pinLng}
+            centerLat={PROVINCE_CENTER[province]?.lat}
+            centerLng={PROVINCE_CENTER[province]?.lon}
+            onChange={(la, lo) => { setPinLat(la); setPinLng(lo); }}
+          />
         </Field>
 
         {error && <p style={{ color: "#FF3D8A", fontSize: 13, margin: 0 }}>{error}</p>}

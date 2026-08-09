@@ -32,14 +32,9 @@ export default function NavBar({ initialUser }) {
   useEffect(() => {
     if (!search.trim()) { setResults([]); return; }
     const t = setTimeout(async () => {
-      const res = await fetch("/api/events");
+      const res = await fetch(`/api/events/search?q=${encodeURIComponent(search.trim())}`);
       const { events } = await res.json();
-      const q = search.trim().toLowerCase();
-      setResults(
-        (events || []).filter(
-          (e) => e.title.toLowerCase().includes(q) || e.province.includes(q) || e.district?.includes(q)
-        ).slice(0, 6)
-      );
+      setResults(events || []);
     }, 200);
     return () => clearTimeout(t);
   }, [search]);

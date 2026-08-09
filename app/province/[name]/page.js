@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { listEvents } from "@/lib/db.mjs";
+import { listEventsLight } from "@/lib/db.mjs";
 import EventCard from "@/components/EventCard";
+
+export const revalidate = 10;
 
 export default async function ProvincePage({ params }) {
   const provinceName = decodeURIComponent(params.name);
-  const all = await listEvents();
-  const events = all.filter((e) => e.province === provinceName);
+  // กรองที่ฐานข้อมูลเลยด้วย province แทนการโหลดโพสต์ทั้งเว็บมากรองทีหลัง
+  const events = await listEventsLight({ province: provinceName });
 
   return (
     <div>

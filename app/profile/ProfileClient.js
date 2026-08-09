@@ -257,7 +257,7 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
           <div key={e.id} className="card" style={{ padding: 14, display: "flex", gap: 12, alignItems: "center" }}>
             <Link href={`/event/${e.id}`} style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 500 }}>{e.title}</div>
-              <div style={{ fontSize: 12, color: "#B8AEDB" }}>{e.province} · {e.comments.length} ความคิดเห็น</div>
+              <div style={{ fontSize: 12, color: "#B8AEDB" }}>{e.province} · {e.commentCount ?? 0} ความคิดเห็น</div>
             </Link>
             <button onClick={() => remove(e.id)} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", padding: 6 }}>
               <Trash2 size={16} />

@@ -139,7 +139,7 @@ function FeedCard({ e }) {
 
       <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#8177AE" }}>
-          <MessageCircle size={14} /> {e.comments?.length || 0}
+          <MessageCircle size={14} /> {e.commentCount ?? 0}
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#8177AE" }}>
           <MapPin size={14} /> {e.district ? `${e.district}, ` : ""}{e.province}

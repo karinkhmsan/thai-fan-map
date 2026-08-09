@@ -145,7 +145,7 @@ export default function NavBar({ initialUser }) {
               fontSize: 13,
               fontWeight: 600,
               color: "#fff",
-              background: "linear-gradient(135deg,#FF3D8A,#E91E63)",
+              background: "linear-gradient(135deg,#3BE249,#1B9E32)",
               border: "1px solid rgba(59, 226, 73, 0.5)",
               boxShadow: "0 0 12px rgba(35, 143, 53, 0.35)",
             }}

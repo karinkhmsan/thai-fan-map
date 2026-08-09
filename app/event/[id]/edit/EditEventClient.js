@@ -1,31 +1,104 @@
 "use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { catInfo } from "@/lib/categories";
+import Link from "next/link";
+import { Plus, X, ArrowLeft, Trash2 } from "lucide-react";
+import { CATEGORIES } from "@/lib/categories";
+import { compressImages } from "@/lib/compressImage";
+import provincesRaw from "@/data/provinces-th.json";
 
-export default function EventDetailClient({ event: initialEvent, currentUser }) {
-  const [event, setEvent] = useState(initialEvent);
-  const [comment, setComment] = useState("");
+const PROVINCES = provincesRaw.map(([name]) => name);
+const MAX_IMAGES = 6;
+
+export default function EditEventClient({ event }) {
+  const [title, setTitle] = useState(event.title);
+  const [category, setCategory] = useState(event.category);
+  const [province, setProvince] = useState(event.province);
+  const [district, setDistrict] = useState(event.district || "");
+  const [districtOptions, setDistrictOptions] = useState([]);
+  const [description, setDescription] = useState(event.description);
+  const [images, setImages] = useState(event.images || []); // ผสม URL เดิม + dataURL ที่เพิ่งเพิ่ม
+  const [newFiles, setNewFiles] = useState([]); // ไฟล์ใหม่ที่ต้องอัปโหลดตอนบันทึก
   const [error, setError] = useState("");
-  const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const fileRef = useRef(null);
   const router = useRouter();
-  const cat = catInfo(event.category);
-  const isOwner = currentUser && currentUser.id === event.authorId;
+  const isFirstRun = useRef(true);
 
-  const sendComment = async () => {
-    if (!comment.trim()) return;
-    if (!currentUser) { router.push("/login"); return; }
-    const res = await fetch(`/api/events/${event.id}/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: comment }),
+  // โหลดรายชื่ออำเภอตามจังหวัด แต่ไม่ล้างค่า district เดิมตอนโหลดครั้งแรก
+  useEffect(() => {
+    fetch(`/api/districts?province=${encodeURIComponent(province)}`)
+      .then((r) => r.json())
+      .then((d) => setDistrictOptions(d.districts || []));
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    setDistrict("");
+  }, [province]);
+
+  const handleFiles = async (fileList) => {
+    const arr = Array.from(fileList).slice(0, MAX_IMAGES - images.length);
+    if (arr.length === 0) return;
+    setPreparing(true);
+    const compressed = await compressImages(arr);
+    setNewFiles((prev) => [...prev, ...compressed].slice(0, MAX_IMAGES));
+    compressed.forEach((f) => {
+      const reader = new FileReader();
+      reader.onload = () => setImages((prev) => [...prev, reader.result]);
+      reader.readAsDataURL(f);
     });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error); return; }
-    setEvent(data.event);
-    setComment("");
+    setPreparing(false);
+  };
+
+  const removeImage = (i) => {
+    const removedUrl = images[i];
+    // ถ้ารูปที่ลบเป็นรูปเดิม (URL จาก server) ไม่ต้องยุ่งกับ newFiles
+    // ถ้าเป็นรูปใหม่ที่เพิ่งเพิ่ม (dataURL) ต้องตัดออกจาก newFiles ด้วยไม่งั้นจะอัปโหลดซ้ำ
+    const isExisting = event.images.includes(removedUrl);
+    if (!isExisting) {
+      const newIndex = images.slice(0, i).filter((img) => !event.images.includes(img)).length;
+      setNewFiles((prev) => prev.filter((_, idx) => idx !== newIndex));
+    }
+    setImages((prev) => prev.filter((_, idx) => idx !== i));
+  };
+
+  const canSubmit = title.trim() && description.trim() && province && !submitting;
+
+  const submit = async () => {
+    setError(""); setSubmitting(true);
+    try {
+      // อัปโหลดเฉพาะรูปใหม่ที่ยังไม่มี URL (dataURL ในเครื่อง)
+      let uploadedUrls = [];
+      if (newFiles.length) {
+        const fd = new FormData();
+        newFiles.forEach((f) => fd.append("images", f));
+        const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+        const upData = await upRes.json();
+        if (!upRes.ok) throw new Error(upData.error || "อัปโหลดรูปไม่สำเร็จ");
+        uploadedUrls = upData.urls;
+      }
+
+      // รวมรูปเดิมที่เหลืออยู่ (ยังไม่ถูกลบ) กับรูปใหม่ที่อัปโหลดเสร็จแล้ว ตามลำดับเดิม
+      let uploadIdx = 0;
+      const finalImages = images.map((img) =>
+        event.images.includes(img) ? img : uploadedUrls[uploadIdx++]
+      );
+
+      const res = await fetch(`/api/events/${event.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, category, province, district, description, images: finalImages }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      router.push(`/event/${event.id}`);
+    } catch (e) {
+      setError(e.message || "เกิดข้อผิดพลาด");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const remove = async () => {
@@ -34,189 +107,92 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
     if (res.ok) router.push("/profile");
   };
 
-  const closeLightbox = () => setLightboxIndex(null);
-  const showPrev = (e) => { e.stopPropagation(); setLightboxIndex((i) => (i - 1 + event.images.length) % event.images.length); };
-  const showNext = (e) => { e.stopPropagation(); setLightboxIndex((i) => (i + 1) % event.images.length); };
-
-  useEffect(() => {
-    if (lightboxIndex === null) return;
-    const onKey = (e) => {
-      if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowLeft") setLightboxIndex((i) => (i - 1 + event.images.length) % event.images.length);
-      if (e.key === "ArrowRight") setLightboxIndex((i) => (i + 1) % event.images.length);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [lightboxIndex, event.images.length]);
-
   return (
     <div>
-      <button onClick={() => router.back()} style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", color: "#B8AEDB", fontSize: 13, cursor: "pointer", padding: 0 }}>
+      <Link href={`/event/${event.id}`} style={{ display: "flex", alignItems: "center", gap: 6, color: "#B8AEDB", fontSize: 13, textDecoration: "none", marginBottom: 12 }}>
         <ArrowLeft size={15} /> ย้อนกลับ
-      </button>
+      </Link>
 
-      <div className="card" style={{ marginTop: 12, overflow: "hidden" }}>
-        <div style={{ padding: "18px 20px 0" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <div style={{
-                width: 42, height: 42, borderRadius: "50%", overflow: "hidden", flexShrink: 0,
-                background: event.authorAvatarUrl ? "transparent" : (event.authorAvatarColor || "#E91E63"),
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 600,
-              }}>
-                {event.authorAvatarUrl ? (
-                  <img src={event.authorAvatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                ) : (
-                  event.authorName?.[0]?.toUpperCase()
-                )}
-              </div>
-              <div>
-                {event.authorId ? (
-                  <Link href={`/profile/${event.authorId}`} style={{ color: "#fff", textDecoration: "none", fontWeight: 600, fontSize: 15 }}>
-                    {event.authorName}
-                  </Link>
-                ) : (
-                  <span style={{ fontWeight: 600, fontSize: 15 }}>{event.authorName}</span>
-                )}
-                <div style={{ fontSize: 12, color: "#8177AE" }}>{event.createdAt}</div>
-              </div>
-            </div>
-            {isOwner && (
-              <div style={{ display: "flex", gap: 14, flexShrink: 0 }}>
-                <Link href={`/event/${event.id}/edit`} style={{ background: "none", border: "none", color: "#FFC145", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none" }}>
-                  <Pencil size={15} /> แก้ไข
-                </Link>
-                <button onClick={remove} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
-                  <Trash2 size={15} /> ลบโพสต์
-                </button>
-              </div>
-            )}
-          </div>
-
-          <h1 style={{ fontSize: 19, fontWeight: 600, margin: "14px 0 6px" }}>{event.title}</h1>
-
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 10 }}>
-            <span style={{ fontSize: 13, color: cat.color, fontWeight: 600 }}>#{cat.label}</span>
-            <Link href={`/province/${encodeURIComponent(event.province)}`} style={{ display: "flex", alignItems: "center", gap: 4, color: "#8177AE", fontSize: 13, textDecoration: "none" }}>
-              <MapPin size={13} /> {event.district ? `${event.district}, ` : ""}{event.province}
-            </Link>
-          </div>
-
-          <p style={{ fontSize: 15, lineHeight: 1.7, color: "#E4DEFF", whiteSpace: "pre-wrap", margin: "0 0 16px" }}>{event.description}</p>
-        </div>
-
-        {event.images.length > 0 && (
-          <ImageGrid images={event.images} onOpen={setLightboxIndex} />
-        )}
-
-        <div style={{ padding: "12px 20px", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 6, color: "#8177AE", fontSize: 13 }}>
-          <MessageCircle size={16} /> {event.comments.length} ความคิดเห็น
-        </div>
-
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: 20 }}>
-          <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
-            {event.comments.map((c) => (
-              <div key={c.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                  {c.authorId ? (
-                    <Link href={`/profile/${c.authorId}`} style={{ fontSize: 13, fontWeight: 500, color: "#FFC145", textDecoration: "none" }}>
-                      {c.authorName}
-                    </Link>
-                  ) : (
-                    <span style={{ fontSize: 13, fontWeight: 500, color: "#FFC145" }}>{c.authorName}</span>
-                  )}
-                  <span style={{ fontSize: 11, color: "#5A5182" }}>{c.createdAt}</span>
-                </div>
-                <div style={{ fontSize: 14, color: "#E4DEFF" }}>{c.text}</div>
-              </div>
-            ))}
-            {event.comments.length === 0 && <p style={{ fontSize: 13, color: "#5A5182" }}>ยังไม่มีความคิดเห็น เป็นคนแรกที่คอมเมนต์เลย!</p>}
-          </div>
-          {error && <p style={{ color: "#FF3D8A", fontSize: 13 }}>{error}</p>}
-          <div style={{ display: "flex", gap: 8 }}>
-            <input className="input" value={comment} onChange={(e) => setComment(e.target.value)}
-              placeholder={currentUser ? `คอมเมนต์ในนาม ${currentUser.username}...` : "เข้าสู่ระบบเพื่อคอมเมนต์"} />
-            <button onClick={sendComment} className="btn-primary">ส่ง</button>
-          </div>
-        </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "0 0 18px" }}>
+        <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>แก้ไขโพสต์</h1>
+        <button onClick={remove} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
+          <Trash2 size={15} /> ลบโพสต์
+        </button>
       </div>
 
-      {lightboxIndex !== null && (
-        <div onClick={closeLightbox} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <button onClick={closeLightbox} style={{ position: "absolute", top: 18, right: 20, background: "rgba(255,255,255,0.1)", border: "none", borderRadius: "50%", width: 40, height: 40, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <X size={20} />
-          </button>
+      <div className="card" style={{ padding: 20, display: "grid", gap: 16 }}>
+        <Field label="ชื่องาน">
+          <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="เช่น เชียงใหม่ Retro Game Fest" />
+        </Field>
 
-          {event.images.length > 1 && (
-            <>
-              <button onClick={showPrev} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.1)", border: "none", borderRadius: "50%", width: 44, height: 44, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <ChevronLeft size={24} />
+        <Field label="ประเภทงาน">
+          <div style={{ display: "flex", gap: 8 }}>
+            {CATEGORIES.map((c) => (
+              <button key={c.id} type="button" onClick={() => setCategory(c.id)} className="chip"
+                style={{ borderColor: category === c.id ? c.color : undefined, background: category === c.id ? c.color + "22" : undefined, color: category === c.id ? c.color : undefined }}>
+                {c.label}
               </button>
-              <button onClick={showNext} style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.1)", border: "none", borderRadius: "50%", width: 44, height: 44, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <ChevronRight size={24} />
-              </button>
-              <div style={{ position: "absolute", bottom: 22, color: "#fff", fontSize: 13, background: "rgba(255,255,255,0.1)", padding: "4px 12px", borderRadius: 999 }}>
-                {lightboxIndex + 1} / {event.images.length}
-              </div>
-            </>
-          )}
+            ))}
+          </div>
+        </Field>
 
-          <img
-            src={event.images[lightboxIndex]}
-            alt=""
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "90vw", maxHeight: "88vh", objectFit: "contain", borderRadius: 6 }}
-          />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <Field label="จังหวัด">
+            <select className="input" value={province} onChange={(e) => setProvince(e.target.value)}>
+              {PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </Field>
+          <Field label="อำเภอ">
+            {districtOptions.length > 0 ? (
+              <select className="input" value={district} onChange={(e) => setDistrict(e.target.value)}>
+                <option value="">-- เลือกอำเภอ --</option>
+                {districtOptions.map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+            ) : (
+              <input className="input" value={district} onChange={(e) => setDistrict(e.target.value)} placeholder="พิมพ์ชื่ออำเภอ" />
+            )}
+          </Field>
         </div>
-      )}
+
+        <Field label="รายละเอียดงาน">
+          <textarea className="input" rows={5} value={description} onChange={(e) => setDescription(e.target.value)}
+            placeholder="บอกเล่ารายละเอียดงาน สถานที่ วันเวลา กิจกรรมภายในงาน..." style={{ resize: "vertical", fontFamily: "inherit" }} />
+        </Field>
+
+        <Field label={`รูปภาพ (สูงสุด ${MAX_IMAGES} รูป)`}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {images.map((img, i) => (
+              <div key={i} style={{ position: "relative", width: 84, height: 84 }}>
+                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 10 }} />
+                <button type="button" onClick={() => removeImage(i)}
+                  style={{ position: "absolute", top: -6, right: -6, background: "#FF3D8A", border: "none", borderRadius: "50%", width: 20, height: 20, color: "#fff", cursor: "pointer" }}>
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+            {images.length < MAX_IMAGES && (
+              <div onClick={() => !preparing && fileRef.current.click()} style={{ width: 84, height: 84, borderRadius: 10, border: "1.5px dashed rgba(255,255,255,0.25)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: preparing ? "wait" : "pointer", color: "#8177AE", gap: 4, opacity: preparing ? 0.5 : 1 }}>
+                <Plus size={18} /><span style={{ fontSize: 11 }}>{preparing ? "กำลังเตรียมรูป..." : "เพิ่มรูป"}</span>
+              </div>
+            )}
+            <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
+          </div>
+        </Field>
+
+        {error && <p style={{ color: "#FF3D8A", fontSize: 13, margin: 0 }}>{error}</p>}
+        <button disabled={!canSubmit} onClick={submit} className="btn-primary" style={{ opacity: canSubmit ? 1 : 0.4, padding: 12, fontSize: 15 }}>
+          {submitting ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
+        </button>
+      </div>
     </div>
   );
 }
 
-function ImageGrid({ images, onOpen }) {
-  const n = images.length;
-
-  if (n === 1) {
-    return (
-      <div onClick={() => onOpen(0)} style={{ cursor: "zoom-in" }}>
-        <img src={images[0]} alt="" style={{ width: "100%", maxHeight: 440, objectFit: "cover", display: "block" }} />
-      </div>
-    );
-  }
-
-  if (n === 2) {
-    return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, height: 300 }}>
-        {images.map((img, i) => (
-          <img key={i} src={img} alt="" onClick={() => onOpen(i)} style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
-        ))}
-      </div>
-    );
-  }
-
-  if (n === 3) {
-    return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320 }}>
-        <img src={images[0]} alt="" onClick={() => onOpen(0)} style={{ gridRow: "1 / 3", width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
-        <img src={images[1]} alt="" onClick={() => onOpen(1)} style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
-        <img src={images[2]} alt="" onClick={() => onOpen(2)} style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
-      </div>
-    );
-  }
-
-  const shown = images.slice(0, 4);
+function Field({ label, children }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, height: 320 }}>
-      {shown.map((img, i) => (
-        <div key={i} onClick={() => onOpen(i)} style={{ position: "relative", cursor: "zoom-in" }}>
-          <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-          {i === 3 && n > 4 && (
-            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 600 }}>
-              +{n - 4}
-            </div>
-          )}
-        </div>
-      ))}
+    <div>
+      <label style={{ display: "block", fontSize: 13, color: "#B8AEDB", marginBottom: 6 }}>{label}</label>
+      {children}
     </div>
   );
 }

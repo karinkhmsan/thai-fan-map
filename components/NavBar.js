@@ -3,13 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { MapPin, Search, Plus, Shield, User, Rss, Menu, Heart, LogOut, LogIn, X } from "lucide-react";
+import { MapPin, Search, Plus, Shield, User, Rss, Menu, Heart, LogOut, LogIn, X, BarChart3 } from "lucide-react";
+import StatsModal from "./StatsModal";
 
 export default function NavBar({ initialUser }) {
   const [user, setUser] = useState(initialUser);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
   const router = useRouter();
   const headerRef = useRef(null);
   const menuRef = useRef(null);
@@ -82,8 +84,15 @@ export default function NavBar({ initialUser }) {
 
               {menuOpen && (
                 <div className="card" style={{ position: "absolute", top: 44, left: 0, minWidth: 200, padding: 6, zIndex: 70, background: "#191332" }}>
+                  <MenuLink href="/" icon={<MapPin size={16} color="#FFC145" />} label="หน้าหลัก (แผนที่)" onClick={() => setMenuOpen(false)} />
                   <MenuLink href="/feed" icon={<Rss size={16} color="#FF3D8A" />} label="ฟีดโพสต์" onClick={() => setMenuOpen(false)} />
                   <MenuLink href="/support" icon={<Heart size={16} color="#FF3D8A" />} label="สนับสนุนเรา" onClick={() => setMenuOpen(false)} />
+                  <button
+                    onClick={() => { setMenuOpen(false); setStatsOpen(true); }}
+                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderRadius: 8, background: "none", border: "none", color: "#E4DEFF", fontSize: 13, cursor: "pointer", textAlign: "left" }}
+                  >
+                    <BarChart3 size={16} color="#8177AE" /> สถิติ
+                  </button>
                   {user && (
                     <MenuLink href="/profile" icon={<User size={16} color="#8177AE" />} label="โปรไฟล์" onClick={() => setMenuOpen(false)} />
                   )}
@@ -177,6 +186,8 @@ export default function NavBar({ initialUser }) {
         </div>
 
       </div>
+
+      <StatsModal open={statsOpen} onClose={() => setStatsOpen(false)} />
     </header>
   );
 }

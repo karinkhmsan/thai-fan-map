@@ -30,6 +30,23 @@ model User {
   events       Event[]
   comments     Comment[]
   commentReports CommentReport[]
+  donations    Donation[]
+}
+
+// รายการสนับสนุนเว็บ มาจาก 2 ทาง: Webhook จาก EasyDonate (ยืนยันแล้วอัตโนมัติ) หรือแนบสลิปเอง (รอแอดมินตรวจสอบ)
+model Donation {
+  id        String   @id @default(uuid())
+  name      String   // ชื่อที่จะโชว์เป็นผู้สนับสนุน (โชว์ public ได้ถ้าอนุมัติแล้ว)
+  amount    Int?     // จำนวนเงิน ใช้เช็คภายในเท่านั้น ไม่โชว์ public
+  message   String?  // ข้อความจากผู้สนับสนุน (ถ้ามี เช่นจาก EasyDonate)
+  slipUrl   String?  // รูปสลิปโอนเงิน (มีเฉพาะกรณีแนบสลิปเอง)
+  source    String   @default("MANUAL") // "MANUAL" (แนบสลิปเอง) หรือ "EASYDONATE" (webhook)
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([status])
 }
 
 model Event {

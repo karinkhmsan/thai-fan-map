@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, Trash2, Ban, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { Shield, Trash2, Ban, CheckCircle, Flag } from "lucide-react";
 
 export default function AdminPage() {
   const router = useRouter();
-  const [data, setData] = useState({ users: [], events: [] });
+  const [data, setData] = useState({ users: [], events: [], reportedComments: [] });
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
@@ -39,6 +40,16 @@ export default function AdminPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "deleteEvent", eventId }),
+    });
+    loadData();
+  };
+
+  const deleteComment = async (commentId) => {
+    if (!confirm("ยืนยันที่จะลบความคิดเห็นนี้หรือไม่?")) return;
+    await fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "deleteComment", commentId }),
     });
     loadData();
   };
@@ -131,6 +142,46 @@ export default function AdminPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* ตารางความคิดเห็นที่ถูกรายงาน */}
+      <div className="card" style={{ padding: 20, marginTop: 24 }}>
+        <h3 style={{ fontSize: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+          <Flag size={15} style={{ color: "#FFC145" }} /> ความคิดเห็นที่ถูกรายงาน ({data.reportedComments.length})
+        </h3>
+        {data.reportedComments.length === 0 ? (
+          <p style={{ fontSize: 13, color: "#5A5182" }}>ยังไม่มีความคิดเห็นที่ถูกรายงาน</p>
+        ) : (
+          <div style={{ display: "grid", gap: 10 }}>
+            {data.reportedComments.map((c) => (
+              <div key={c.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 14px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, marginBottom: 6 }}>
+                  <div style={{ fontSize: 13 }}>
+                    <span style={{ fontWeight: 600, color: "#FFC145" }}>{c.authorName}</span>
+                    {c.eventTitle && (
+                      <>
+                        {" "}ในโพสต์{" "}
+                        <Link href={`/event/${c.eventId}`} style={{ color: "#B8AEDB", textDecoration: "underline" }}>
+                          {c.eventTitle}
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 11, flexShrink: 0, padding: "2px 8px", borderRadius: 999, background: "rgba(255,61,138,0.15)", color: "#FF3D8A" }}>
+                    ถูกรายงาน {c.reportCount} ครั้ง
+                  </span>
+                </div>
+                <div style={{ fontSize: 14, color: "#E4DEFF", marginBottom: 10 }}>{c.text}</div>
+                <button
+                  onClick={() => deleteComment(c.id)}
+                  style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12 }}
+                >
+                  <Trash2 size={14} /> ลบความคิดเห็นนี้
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

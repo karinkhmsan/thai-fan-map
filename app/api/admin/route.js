@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.mjs";
 import { getCurrentUser } from "@/lib/auth.mjs";
+import { listReportedComments, adminDeleteComment } from "@/lib/db.mjs";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -18,7 +19,9 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json({ users, events });
+  const reportedComments = await listReportedComments();
+
+  return NextResponse.json({ users, events, reportedComments });
 }
 
 export async function POST(req) {
@@ -27,7 +30,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 403 });
   }
 
-  const { action, userId, eventId } = await req.json();
+  const { action, userId, eventId, commentId } = await req.json();
 
   if (action === "toggleBan") {
     const target = await prisma.user.findUnique({ where: { id: userId } });
@@ -42,6 +45,12 @@ export async function POST(req) {
 
   if (action === "deleteEvent") {
     await prisma.event.delete({ where: { id: eventId } });
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === "deleteComment") {
+    const ok = await adminDeleteComment(commentId);
+    if (!ok) return NextResponse.json({ error: "ไม่พบความคิดเห็นนี้" }, { status: 404 });
     return NextResponse.json({ success: true });
   }
 

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil, X, ChevronLeft, ChevronRight, Flag } from "lucide-react";
 import { catInfo } from "@/lib/categories";
 
 export default function EventDetailClient({ event: initialEvent, currentUser }) {
@@ -10,9 +10,11 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [reportedIds, setReportedIds] = useState(new Set());
   const router = useRouter();
   const cat = catInfo(event.category);
   const isOwner = currentUser && currentUser.id === event.authorId;
+  const isAdmin = currentUser && currentUser.role === "ADMIN";
 
   const sendComment = async () => {
     if (!comment.trim()) return;
@@ -32,6 +34,20 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
     if (!confirm("ยืนยันลบโพสต์นี้?")) return;
     const res = await fetch(`/api/events/${event.id}`, { method: "DELETE" });
     if (res.ok) router.push("/profile");
+  };
+
+  const removeComment = async (commentId) => {
+    if (!confirm("ยืนยันลบความคิดเห็นนี้?")) return;
+    const res = await fetch(`/api/comments/${commentId}`, { method: "DELETE" });
+    const data = await res.json();
+    if (res.ok) setEvent(data.event);
+    else alert(data.error || "ลบไม่ได้");
+  };
+
+  const reportCommentById = async (commentId) => {
+    if (!currentUser) { router.push("/login"); return; }
+    const res = await fetch(`/api/comments/${commentId}/report`, { method: "POST" });
+    if (res.ok) setReportedIds((prev) => new Set(prev).add(commentId));
   };
 
   const closeLightbox = () => setLightboxIndex(null);
@@ -115,21 +131,48 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
 
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: 20 }}>
           <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
-            {event.comments.map((c) => (
-              <div key={c.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                  {c.authorId ? (
-                    <Link href={`/profile/${c.authorId}`} style={{ fontSize: 13, fontWeight: 500, color: "#FFC145", textDecoration: "none" }}>
-                      {c.authorName}
-                    </Link>
-                  ) : (
-                    <span style={{ fontSize: 13, fontWeight: 500, color: "#FFC145" }}>{c.authorName}</span>
-                  )}
-                  <span style={{ fontSize: 11, color: "#5A5182" }}>{c.createdAt}</span>
+            {event.comments.map((c) => {
+              const isCommentOwner = currentUser && currentUser.id === c.authorId;
+              const canDelete = isCommentOwner || isAdmin;
+              const canReport = currentUser && !isCommentOwner;
+              const alreadyReported = reportedIds.has(c.id);
+              return (
+                <div key={c.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3, gap: 8 }}>
+                    {c.authorId ? (
+                      <Link href={`/profile/${c.authorId}`} style={{ fontSize: 13, fontWeight: 500, color: "#FFC145", textDecoration: "none" }}>
+                        {c.authorName}
+                      </Link>
+                    ) : (
+                      <span style={{ fontSize: 13, fontWeight: 500, color: "#FFC145" }}>{c.authorName}</span>
+                    )}
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, color: "#5A5182" }}>{c.createdAt}</span>
+                      {canDelete && (
+                        <button
+                          onClick={() => removeComment(c.id)}
+                          title="ลบความคิดเห็น"
+                          style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", padding: 0, display: "flex" }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                      {canReport && (
+                        <button
+                          onClick={() => reportCommentById(c.id)}
+                          disabled={alreadyReported}
+                          title={alreadyReported ? "รายงานแล้ว" : "รายงานความคิดเห็นนี้"}
+                          style={{ background: "none", border: "none", color: alreadyReported ? "#5A5182" : "#8177AE", cursor: alreadyReported ? "default" : "pointer", padding: 0, display: "flex" }}
+                        >
+                          <Flag size={13} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 14, color: "#E4DEFF" }}>{c.text}</div>
                 </div>
-                <div style={{ fontSize: 14, color: "#E4DEFF" }}>{c.text}</div>
-              </div>
-            ))}
+              );
+            })}
             {event.comments.length === 0 && <p style={{ fontSize: 13, color: "#5A5182" }}>ยังไม่มีความคิดเห็น เป็นคนแรกที่คอมเมนต์เลย!</p>}
           </div>
           {error && <p style={{ color: "#FF3D8A", fontSize: 13 }}>{error}</p>}

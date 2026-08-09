@@ -29,6 +29,7 @@ model User {
   createdAt    DateTime  @default(now())
   events       Event[]
   comments     Comment[]
+  commentReports CommentReport[]
 }
 
 model Event {
@@ -48,11 +49,25 @@ model Event {
 }
 
 model Comment {
-  id        String   @id @default(uuid())
+  id        String          @id @default(uuid())
   text      String
   eventId   String
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event     Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  author    User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now())
+  reports   CommentReport[]
+}
+
+// รายงานความคิดเห็น: คนอื่น (ที่ไม่ใช่เจ้าของ) กดรายงานได้ ผู้ใช้คนหนึ่งรายงานคอมเมนต์เดิมซ้ำไม่ได้ (unique)
+// แอดมินจะเห็นรายการนี้ในหน้า Admin แล้วลบคอมเมนต์ได้
+model CommentReport {
+  id         String   @id @default(uuid())
+  commentId  String
+  comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reporterId String
+  reporter   User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([commentId, reporterId])
 }

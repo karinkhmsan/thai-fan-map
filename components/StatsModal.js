@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { X, MapPin, Heart } from "lucide-react";
 
@@ -7,6 +8,9 @@ export default function StatsModal({ open, onClose }) {
   const [tab, setTab] = useState("province"); // "province" | "donors"
   const [provinces, setProvinces] = useState(null);
   const [donors, setDonors] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -15,11 +19,14 @@ export default function StatsModal({ open, onClose }) {
     fetch("/api/donations/approved").then((r) => r.json()).then((d) => setDonors(d.donors || []));
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const maxCount = provinces?.length ? Math.max(...provinces.map((p) => p.count)) : 1;
 
-  return (
+  // ใช้ portal render ตรงเข้า document.body แทนที่จะปล่อยให้เป็นลูกของ <header>
+  // เพราะ header มี backdrop-filter อยู่ ซึ่งทำให้ position:fixed ของลูกๆ ยึดตำแหน่งกับ header แทนที่จะยึดกับหน้าจอทั้งหมด
+  // (บั๊กที่ทำให้ modal ค้างติดอยู่แถวบนสุด เลื่อนไม่ได้)
+  return createPortal(
     <div
       onClick={onClose}
       style={{ position: "fixed", inset: 0, background: "rgba(10,7,24,0.75)", backdropFilter: "blur(3px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
@@ -97,7 +104,8 @@ export default function StatsModal({ open, onClose }) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

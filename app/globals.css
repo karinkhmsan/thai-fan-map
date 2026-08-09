@@ -77,7 +77,7 @@ select.input option {
 /* กว้างขึ้นเฉพาะจอใหญ่ (PC/แท็บเล็ต) มือถือยังคงขนาดเดิม (inline style เป็นค่าตั้งต้น) */
 @media (min-width: 700px) {
   .donate-card {
-    max-width: 640px !important;
+    max-width: 900px !important;
   }
   .stats-modal {
     max-width: 760px !important;

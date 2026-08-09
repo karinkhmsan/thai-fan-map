@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import generatePayload from "promptpay-qr";
 import { Heart, Copy, Check, Upload, X, ExternalLink } from "lucide-react";
+import { compressImage } from "@/lib/compressImage";
 
 // เบอร์พร้อมเพย์ของเว็บ (ใช้รับการสนับสนุน)
 const PROMPTPAY_ID = "0927454230";
@@ -49,12 +50,15 @@ export default function DonateBox({ currentUser }) {
     }
   };
 
-  const pickSlip = (file) => {
+  const pickSlip = async (file) => {
     if (!file) return;
-    setSlipFile(file);
+    // บีบอัดก่อนอัปโหลด เหมือนตอนโพสต์รูปงาน แต่ใช้ quality สูงกว่า/ไม่ย่อเล็กเกินไป
+    // เพราะสลิปต้องอ่านตัวเลขในรูปออกให้ชัด ไม่ใช่แค่ดูสวย
+    const compressed = await compressImage(file, { maxWidth: 1800, maxHeight: 1800, quality: 0.85 });
+    setSlipFile(compressed);
     const reader = new FileReader();
     reader.onload = () => setSlipPreview(reader.result);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
   };
 
   const submitSlip = async () => {

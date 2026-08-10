@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { MapPin, Search, Plus, Shield, User, Rss, Menu, Heart, LogOut, LogIn, X, BarChart3 } from "lucide-react";
+import { MapPin, Search, Plus, Shield, User, Rss, Menu, Heart, LogOut, LogIn, X, BarChart3, FileText, ShieldCheck } from "lucide-react";
 import StatsModal from "./StatsModal";
 
 export default function NavBar({ initialUser }) {
@@ -99,6 +99,9 @@ export default function NavBar({ initialUser }) {
                   {user && user.role === "ADMIN" && (
                     <MenuLink href="/admin" icon={<Shield size={16} color="#8177AE" />} label="Admin" onClick={() => setMenuOpen(false)} />
                   )}
+                  <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "6px 4px" }} />
+                  <MenuLink href="/terms" icon={<FileText size={16} color="#8177AE" />} label="ข้อกำหนดการใช้งาน" onClick={() => setMenuOpen(false)} />
+                  <MenuLink href="/privacy" icon={<ShieldCheck size={16} color="#8177AE" />} label="นโยบายความเป็นส่วนตัว" onClick={() => setMenuOpen(false)} />
                   <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "6px 4px" }} />
                   {user ? (
                     <button

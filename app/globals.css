@@ -72,6 +72,11 @@ select.input option {
   .mobile-hide {
     display: none !important;
   }
+  /* จอมือถือ: กล่องปักหมุดเดิม 220px แคบไปมาก แตะ/ลากหมุดยาก ให้กินพื้นที่จอมากขึ้น */
+  .pin-picker-map {
+    height: min(58vh, 480px) !important;
+    min-height: 320px !important;
+  }
 }
 
 /* กว้างขึ้นเฉพาะจอใหญ่ (PC/แท็บเล็ต) มือถือยังคงขนาดเดิม (inline style เป็นค่าตั้งต้น) */
@@ -82,5 +87,10 @@ select.input option {
   .stats-modal {
     max-width: 760px !important;
     max-height: 85vh !important;
+  }
+  /* จอ PC: เพดานเดิม 420px แคปไว้ต่ำไป ขยับให้ใหญ่ขึ้นจริง */
+  .pin-picker-map {
+    height: min(65vh, 620px) !important;
+    min-height: 400px !important;
   }
 }

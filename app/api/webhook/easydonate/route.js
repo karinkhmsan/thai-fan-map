@@ -20,12 +20,14 @@ export async function POST(req) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 
-  // รูปแบบ field จาก EasyDonate อาจต่างกันไปตามเวอร์ชัน เผื่อไว้หลายชื่อ
+  // รูปแบบ payload จริงจาก EasyDonate (เช็คจากตัวอย่าง Payload ในหน้าโซนผู้พัฒนา):
+  // { referenceNo, channelName, donatorName, donateMessage, amount, time }
+  // ก่อนหน้านี้เช็คผิดชื่อ (donorName แทน donatorName) เลยไม่เคยจับชื่อได้เลย ตกไปใช้ fallback ตลอด
   const name =
-    body.name || body.donorName || body.from || body.donator_name || "ผู้สนับสนุนนิรนาม";
+    body.donatorName || body.name || body.donorName || body.from || body.donator_name || "ผู้สนับสนุนนิรนาม";
   const amountRaw = body.amount ?? body.price ?? body.total ?? body.donation_amount;
   const amount = amountRaw ? Math.round(Number(amountRaw)) : null;
-  const message = body.message || body.comment || body.detail || null;
+  const message = body.donateMessage || body.message || body.comment || body.detail || null;
 
   // มาจาก webhook ที่ยืนยันตัวตนด้วย secret แล้ว และ EasyDonate เช็คการโอนจริงมาให้แล้ว
   // เลยตั้งสถานะ APPROVED ได้เลยทันที ไม่ต้องรอแอดมินกดยืนยันเหมือนทางแนบสลิปเอง

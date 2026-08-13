@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { MapPin, Search, Plus, Shield, User, Rss, Menu, Heart, LogOut, LogIn, X, BarChart3, FileText, ShieldCheck } from "lucide-react";
+import { MapPin, Search, Plus, Shield, User, Rss, Menu, Heart, LogOut, LogIn, X, BarChart3, FileText, ShieldCheck ,HelpCircle} from "lucide-react";
 import StatsModal from "./StatsModal";
 
 export default function NavBar({ initialUser }) {
@@ -109,6 +109,7 @@ export default function NavBar({ initialUser }) {
         <div style={{ padding: 6 }}>
           <MenuLink href="/" icon={<MapPin size={16} color="#FFC145" />} label="หน้าหลัก (แผนที่)" onClick={() => setMenuOpen(false)} />
           <MenuLink href="/feed" icon={<Rss size={16} color="#FF3D8A" />} label="ฟีดโพสต์" onClick={() => setMenuOpen(false)} />
+          <MenuLink href="/help" icon={<HelpCircle size={16} color="#8177AE" />} label="วิธีใช้งาน" onClick={() => setMenuOpen(false)} />
           <MenuLink href="/support" icon={<Heart size={16} color="#FF3D8A" />} label="สนับสนุนเรา" onClick={() => setMenuOpen(false)} />
           <button
             onClick={() => { setMenuOpen(false); setStatsOpen(true); }}

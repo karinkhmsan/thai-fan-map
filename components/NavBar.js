@@ -71,26 +71,11 @@ export default function NavBar({ initialUser }) {
 
   return (
     <>
-      {/* ปุ่มเมนูรวม (3 ขีด) — ลอยยึดมุมซ้ายบนตลอด ไม่อยู่ในแถบเนื้อหากลางจอแล้ว */}
-      <button
-        onClick={() => setMenuOpen((v) => !v)}
-        aria-label="เมนู"
-        style={{
-          position: "fixed", top: 14, left: 14, zIndex: 210,
-          width: 40, height: 40, borderRadius: 12, padding: 0,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          background: "rgba(21,15,46,0.92)", border: "1px solid rgba(255,255,255,0.12)",
-          color: "#fff", cursor: "pointer", backdropFilter: "blur(8px)",
-        }}
-      >
-        {menuOpen ? <X size={18} /> : <Menu size={18} />}
-      </button>
-
       {/* พื้นหลังจางๆ เมื่อ drawer เปิด กดเพื่อปิดได้ */}
       {menuOpen && (
         <div
           onClick={() => setMenuOpen(false)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 195 }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 90 }}
         />
       )}
 
@@ -99,7 +84,7 @@ export default function NavBar({ initialUser }) {
         ref={drawerRef}
         style={{
           position: "fixed", top: 0, left: 0, height: "100vh", width: 264,
-          maxWidth: "82vw", background: "#191332", zIndex: 200,
+          maxWidth: "82vw", background: "#191332", zIndex: 100,
           transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 0.25s ease", boxShadow: "4px 0 24px rgba(0,0,0,0.4)",
           display: "flex", flexDirection: "column", overflowY: "auto",
@@ -154,61 +139,48 @@ export default function NavBar({ initialUser }) {
         </div>
       </div>
 
-      {/* รูปโปรไฟล์ / ล็อกอิน — ลอยยึดมุมขวาบน */}
-      {user ? (
-        <Link
-          href="/profile"
-          style={{
-            position: "fixed", top: 14, right: 14, zIndex: 210,
-            width: 40, height: 40, borderRadius: "50%",
-            background: user.avatarUrl ? "transparent" : (user.avatarColor || "#E91E63"),
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 600, fontSize: 15, overflow: "hidden",
-            border: "2px solid #FF3D8A",
-          }}
-        >
-          {user.avatarUrl ? (
-            <img src={user.avatarUrl} alt="profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          ) : (
-            user.username ? user.username[0].toUpperCase() : <User size={18} />
-          )}
-        </Link>
-      ) : (
-        <Link
-          href="/login"
-          className="btn-ghost"
-          style={{ position: "fixed", top: 14, right: 14, zIndex: 210, padding: "8px 14px", fontSize: 12 }}
-        >
-          เข้าสู่ระบบ
-        </Link>
-      )}
-
-      {/* ปุ่มสร้างโพสต์ — ดึงลงมาอยู่ใต้รูปโปรไฟล์ ฝั่งขวา */}
-      <Link
-        href="/create"
-        className="btn-primary"
+      {/* แถบบนสุด — ทุกอย่าง (ปุ่มเมนู, โลโก้, ค้นหา, โปรไฟล์, สร้างโพสต์) อยู่ในแถบเดียวกันจริงๆ
+          ไม่ใช้ position:fixed ลอยทับอีกต่อไป กันปัญหาซ้อน/ล้นขอบแถบแบบที่ผ่านมา */}
+      <header
+        ref={headerRef}
         style={{
-          position: "fixed", top: 62, right: 14, zIndex: 210,
-          padding: "7px 14px", fontSize: 13, display: "flex", alignItems: "center", gap: 4,
-          boxShadow: "0 4px 14px rgba(0,0,0,0.35)",
+          position: "sticky", top: 0, zIndex: 50,
+          backdropFilter: "blur(12px)", background: "rgba(21,15,46,0.92)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
         }}
       >
-        <Plus size={15} /> <span className="mobile-hide">สร้างโพสต์</span>
-      </Link>
+        <div
+          className="navbar-row"
+          style={{
+            maxWidth: 1200, margin: "0 auto", padding: "10px 14px",
+            display: "flex", alignItems: "center", gap: 10,
+          }}
+        >
+          {/* ซ้าย: ปุ่มเมนู (3 ขีด) + โลโก้ */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="เมนู"
+              style={{
+                width: 36, height: 36, borderRadius: 10, padding: 0, flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
+                color: "#fff", cursor: "pointer",
+              }}
+            >
+              {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
 
-      {/* โลโก้ — ลอยยึดข้างปุ่มเมนู มุมซ้ายบน ให้เห็นแบรนด์ตลอดแม้ไม่เปิดเมนู */}
-      <Link href="/" className="navbar-logo" aria-label="FanQuestMap หน้าแรก">
-        <MapPin size={19} color="#FFC145" />
-        <span className="navbar-logo-text">
-          FanQuest<span style={{ color: "#FF3D8A" }}>Map</span>
-        </span>
-      </Link>
+            <Link href="/" className="navbar-logo" aria-label="FanQuestMap หน้าแรก">
+              <MapPin size={19} color="#FFC145" />
+              <span className="navbar-logo-text">
+                FanQuest<span style={{ color: "#FF3D8A" }}>Map</span>
+              </span>
+            </Link>
+          </div>
 
-      <header ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 50, backdropFilter: "blur(12px)", background: "rgba(21,15,46,0.92)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-        <div className="navbar-search-row" style={{ maxWidth: 1000, margin: "0 auto", padding: "10px 66px", display: "flex", flexDirection: "column", gap: 10 }}>
-
-          {/* แถบล่าง: กล่องค้นหา (ปุ่มเมนู/โปรไฟล์/สร้างโพสต์ย้ายไปลอยมุมจอแล้ว เว้นที่ตรงนี้ไว้ให้ค้นหาเต็มแถว) */}
-          <div style={{ position: "relative", width: "100%" }}>
+          {/* กลาง: กล่องค้นหา ยืดเต็มพื้นที่ที่เหลือ */}
+          <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
             <Search size={15} style={{ position: "absolute", left: 12, top: 10, color: "#8177AE" }} />
             <input
               value={search}
@@ -230,6 +202,40 @@ export default function NavBar({ initialUser }) {
             )}
           </div>
 
+          {/* ขวา: รูปโปรไฟล์ + ปุ่มสร้างโพสต์ อยู่ในแถวเดียวกัน ไม่ลอยแยกอีกแล้ว */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+            {user ? (
+              <Link
+                href="/profile"
+                aria-label="โปรไฟล์"
+                style={{
+                  width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+                  background: user.avatarUrl ? "transparent" : (user.avatarColor || "#E91E63"),
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontWeight: 600, fontSize: 14, overflow: "hidden",
+                  border: "2px solid #FF3D8A",
+                }}
+              >
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  user.username ? user.username[0].toUpperCase() : <User size={16} />
+                )}
+              </Link>
+            ) : (
+              <Link href="/login" className="btn-ghost" style={{ padding: "7px 12px", fontSize: 12, whiteSpace: "nowrap" }}>
+                เข้าสู่ระบบ
+              </Link>
+            )}
+
+            <Link
+              href="/create"
+              className="btn-primary"
+              style={{ padding: "7px 12px", fontSize: 13, display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}
+            >
+              <Plus size={15} /> <span className="mobile-hide">สร้างโพสต์</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -237,11 +243,6 @@ export default function NavBar({ initialUser }) {
 
       <style jsx>{`
         .navbar-logo {
-          position: fixed;
-          top: 14px;
-          left: 64px;
-          z-index: 210;
-          height: 40px;
           display: flex;
           align-items: center;
           gap: 6px;
@@ -251,15 +252,13 @@ export default function NavBar({ initialUser }) {
           font-size: 16px;
           white-space: nowrap;
         }
-        .navbar-search-row {
-          padding-left: 200px !important;
-        }
         @media (max-width: 640px) {
           .navbar-logo-text {
             display: none;
           }
-          .navbar-search-row {
-            padding-left: 66px !important;
+          .navbar-row {
+            padding: 8px 10px !important;
+            gap: 6px !important;
           }
         }
       `}</style>

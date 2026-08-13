@@ -3,23 +3,51 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil, X, ChevronLeft, ChevronRight, Flag, Navigation } from "lucide-react";
+import { ArrowLeft, MessageCircle, MapPin, Trash2, Pencil, X, ChevronLeft, ChevronRight, Flag, Navigation, Heart, UserPlus, UserCheck } from "lucide-react";
 import { catInfo } from "@/lib/categories";
 
 const EventLocationMap = dynamic(() => import("@/components/EventLocationMap"), { ssr: false });
 
-export default function EventDetailClient({ event: initialEvent, currentUser }) {
+export default function EventDetailClient({ event: initialEvent, currentUser, initialFollow }) {
   const [event, setEvent] = useState(initialEvent);
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [reportedIds, setReportedIds] = useState(new Set());
   const [eventReported, setEventReported] = useState(false);
+  const [liked, setLiked] = useState(!!initialEvent.isLiked);
+  const [likeCount, setLikeCount] = useState(initialEvent.likeCount ?? 0);
+  const [following, setFollowing] = useState(!!initialFollow?.isFollowing);
+  const [followerCount, setFollowerCount] = useState(initialFollow?.followerCount ?? 0);
   const router = useRouter();
   const cat = catInfo(event.category);
   const isOwner = currentUser && currentUser.id === event.authorId;
   const isAdmin = currentUser && currentUser.role === "ADMIN";
   const hasPin = event.lat != null && event.lng != null;
+
+  const toggleLike = async () => {
+    if (!currentUser) { router.push("/login"); return; }
+    setLiked((v) => !v);
+    setLikeCount((c) => c + (liked ? -1 : 1));
+    const res = await fetch(`/api/events/${event.id}/like`, { method: "POST" });
+    if (res.ok) {
+      const data = await res.json();
+      setLiked(data.liked);
+      setLikeCount(data.count);
+    }
+  };
+
+  const toggleFollow = async () => {
+    if (!currentUser) { router.push("/login"); return; }
+    setFollowing((v) => !v);
+    setFollowerCount((c) => c + (following ? -1 : 1));
+    const res = await fetch(`/api/users/${event.authorId}/follow`, { method: "POST" });
+    if (res.ok) {
+      const data = await res.json();
+      setFollowing(data.following);
+      setFollowerCount(data.followerCount);
+    }
+  };
 
   const reportPost = async () => {
     if (!currentUser) { router.push("/login"); return; }
@@ -108,6 +136,20 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
                 )}
                 <div style={{ fontSize: 12, color: "#8177AE" }}>{event.createdAt}</div>
               </div>
+              {!isOwner && event.authorId && (
+                <button
+                  onClick={toggleFollow}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600,
+                    padding: "5px 12px", borderRadius: 999, cursor: "pointer", marginLeft: 4,
+                    background: following ? "rgba(255,255,255,0.08)" : "#7F49FF",
+                    border: following ? "1px solid rgba(255,255,255,0.15)" : "none",
+                    color: "#fff",
+                  }}
+                >
+                  {following ? <UserCheck size={13} /> : <UserPlus size={13} />} {following ? "ติดตามแล้ว" : "ติดตาม"}
+                </button>
+              )}
             </div>
             {isOwner && (
               <div style={{ display: "flex", gap: 14, flexShrink: 0 }}>
@@ -161,8 +203,19 @@ export default function EventDetailClient({ event: initialEvent, currentUser }) 
           <ImageGrid images={event.images} onOpen={setLightboxIndex} />
         )}
 
-        <div style={{ padding: "12px 20px", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 6, color: "#8177AE", fontSize: 13 }}>
-          <MessageCircle size={16} /> {event.comments.length} ความคิดเห็น
+        <div style={{ padding: "12px 20px", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 18, fontSize: 13 }}>
+          <button
+            onClick={toggleLike}
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", padding: 0, cursor: "pointer", color: liked ? "#FF3D8A" : "#8177AE" }}
+          >
+            <Heart size={16} fill={liked ? "#FF3D8A" : "none"} /> {likeCount} ไลค์
+          </button>
+          <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#8177AE" }}>
+            <MessageCircle size={16} /> {event.comments.length} ความคิดเห็น
+          </span>
+          {followerCount > 0 && !isOwner && (
+            <span style={{ color: "#5A5182" }}>ผู้ติดตาม {followerCount}</span>
+          )}
         </div>
 
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: 20 }}>

@@ -32,6 +32,33 @@ model User {
   commentReports CommentReport[]
   eventReports EventReport[]
   donations    Donation[]
+  likes        Like[]
+  following    Follow[] @relation("Follower")   // คนที่ฉันติดตาม
+  followers    Follow[] @relation("Following")  // คนที่ติดตามฉัน
+}
+
+// ระบบไลค์โพสต์ — ผู้ใช้คนหนึ่งไลค์โพสต์เดิมซ้ำไม่ได้ (unique)
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, eventId])
+}
+
+// ระบบติดตาม — follower ติดตาม following, กันติดตามซ้ำด้วย unique
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  follower    User     @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
 }
 
 // รายการสนับสนุนเว็บ มาจาก 2 ทาง: Webhook จาก EasyDonate (ยืนยันแล้วอัตโนมัติ) หรือแนบสลิปเอง (รอแอดมินตรวจสอบ)
@@ -65,6 +92,7 @@ model Event {
   createdAt   DateTime  @default(now())
   comments    Comment[]
   reports     EventReport[]
+  likes       Like[]
 
   @@index([province])
 }

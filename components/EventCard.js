@@ -1,10 +1,37 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Image as ImageIcon, MapPin } from "lucide-react";
+import { Image as ImageIcon, MapPin, Heart } from "lucide-react";
 import { catInfo } from "@/lib/categories";
 
 export default function EventCard({ e }) {
   const cat = catInfo(e.category);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(e.likeCount ?? 0);
+
+  useEffect(() => {
+    fetch(`/api/events/${e.id}/like`)
+      .then((r) => r.json())
+      .then((d) => { if (typeof d.liked === "boolean") setLiked(d.liked); })
+      .catch(() => {});
+  }, [e.id]);
+
+  const toggleLike = async (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    setLiked((v) => !v);
+    setLikeCount((c) => c + (liked ? -1 : 1));
+    try {
+      const res = await fetch(`/api/events/${e.id}/like`, { method: "POST" });
+      if (res.status === 401) { window.location.href = "/login"; return; }
+      const data = await res.json();
+      if (typeof data.liked === "boolean") setLiked(data.liked);
+      if (typeof data.count === "number") setLikeCount(data.count);
+    } catch {
+      setLiked((v) => !v);
+      setLikeCount((c) => c + (liked ? 1 : -1));
+    }
+  };
 
   return (
     <Link href={`/event/${e.id}`} className="card" style={{ padding: 14, display: "flex", gap: 12, textDecoration: "none", color: "inherit" }}>
@@ -34,8 +61,16 @@ export default function EventCard({ e }) {
         </div>
 
         <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e.title}</div>
-        <div style={{ fontSize: 13, color: "#B8AEDB", display: "flex", alignItems: "center", gap: 4 }}>
-          <MapPin size={12} /> {e.district ? `${e.district}, ` : ""}{e.province}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontSize: 13, color: "#B8AEDB", display: "flex", alignItems: "center", gap: 4 }}>
+            <MapPin size={12} /> {e.district ? `${e.district}, ` : ""}{e.province}
+          </div>
+          <button
+            onClick={toggleLike}
+            style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: liked ? "#FF3D8A" : "#8177AE", background: "none", border: "none", padding: 0, cursor: "pointer", flexShrink: 0 }}
+          >
+            <Heart size={13} fill={liked ? "#FF3D8A" : "none"} /> {likeCount}
+          </button>
         </div>
       </div>
     </Link>

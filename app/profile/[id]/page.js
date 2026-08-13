@@ -2,9 +2,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma.mjs";
 import { MapPin, Link as LinkIcon, MessageSquare } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth.mjs";
+import { getFollowInfo } from "@/lib/db.mjs";
+import PublicProfileFollowBar from "@/components/PublicProfileFollowBar";
+import FollowStats from "@/components/FollowStats";
 
 export default async function PublicProfilePage({ params }) {
   const { id } = params;
+  const currentUser = await getCurrentUser();
 
   // ดึงข้อมูลผู้ใช้และโพสต์ทั้งหมดของยูสเซอร์คนนี้
   const targetUser = await prisma.user.findUnique({
@@ -27,6 +32,9 @@ export default async function PublicProfilePage({ params }) {
   });
 
   if (!targetUser) notFound();
+
+  const { followerCount, followingCount, isFollowing } = await getFollowInfo(id, currentUser?.id);
+  const isOwnProfile = currentUser && currentUser.id === id;
 
   return (
     <div style={{ maxWidth: 650, margin: "0 auto", paddingBottom: 40, color: "#fff" }}>
@@ -62,6 +70,20 @@ export default async function PublicProfilePage({ params }) {
             </div>
           </div>
         </div>
+
+        {isOwnProfile ? (
+          <div style={{ marginBottom: 4 }}>
+            <FollowStats userId={id} followerCount={followerCount} followingCount={followingCount} />
+          </div>
+        ) : (
+          <PublicProfileFollowBar
+            targetId={id}
+            isLoggedIn={!!currentUser}
+            initialFollowing={isFollowing}
+            initialFollowerCount={followerCount}
+            followingCount={followingCount}
+          />
+        )}
 
         {/* Bio & Social Links */}
         {targetUser.bio && (

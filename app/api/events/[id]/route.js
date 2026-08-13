@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
-import { getEvent, deleteEvent, updateEvent } from "@/lib/db.mjs";
+import { getEvent, deleteEvent, updateEvent, getLikeInfo } from "@/lib/db.mjs";
 import { getCurrentUser } from "@/lib/auth.mjs";
 
 export async function GET(_req, { params }) {
   const event = await getEvent(params.id);
   if (!event) return NextResponse.json({ error: "ไม่พบโพสต์นี้" }, { status: 404 });
-  return NextResponse.json({ event });
+  const user = await getCurrentUser();
+  const { liked } = await getLikeInfo(params.id, user?.id);
+  return NextResponse.json({ event: { ...event, isLiked: liked } });
 }
 
 export async function PATCH(req, { params }) {

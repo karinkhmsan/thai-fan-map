@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { User, Trash2, Camera, Link as LinkIcon, Edit3, Check, X } from "lucide-react";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
+import FollowStats from "@/components/FollowStats";
 
-export default function ProfileClient({ user, myEvents: initialEvents }) {
+export default function ProfileClient({ user, myEvents: initialEvents, followerCount = 0, followingCount = 0 }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -166,7 +167,8 @@ export default function ProfileClient({ user, myEvents: initialEvents }) {
             <div className="profile-username" style={{ fontSize: 18, fontWeight: 600 }}>
               {user.username}
             </div>
-            <div style={{ fontSize: 12, color: "#8177AE" }}>เข้าร่วมเมื่อ {new Date(user.createdAt).toLocaleDateString("th-TH")}</div>
+            <div style={{ fontSize: 12, color: "#8177AE", marginBottom: 6 }}>เข้าร่วมเมื่อ {new Date(user.createdAt).toLocaleDateString("th-TH")}</div>
+            <FollowStats userId={user.id} followerCount={followerCount} followingCount={followingCount} />
           </div>
 
           <div className="profile-actions" style={{ display: "flex", gap: 8 }}>

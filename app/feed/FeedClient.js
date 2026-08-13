@@ -1,7 +1,7 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { MessageCircle, MapPin } from "lucide-react";
+import { MessageCircle, MapPin, Heart } from "lucide-react";
 import { CATEGORIES, catInfo } from "@/lib/categories";
 
 export default function FeedClient({ initialEvents }) {
@@ -63,6 +63,36 @@ export default function FeedClient({ initialEvents }) {
 
 function FeedCard({ e }) {
   const cat = catInfo(e.category);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(e.likeCount ?? 0);
+
+  // เช็คว่าตัวเองไลค์โพสต์นี้อยู่ไหม (โหลดเบาๆ ทีหลัง ไม่บล็อกการแสดงฟีด)
+  useEffect(() => {
+    fetch(`/api/events/${e.id}/like`)
+      .then((r) => r.json())
+      .then((d) => { if (typeof d.liked === "boolean") setLiked(d.liked); })
+      .catch(() => {});
+  }, [e.id]);
+
+  const toggleLike = async (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    // อัปเดตหน้าจอก่อนเลย (optimistic) แล้วค่อยยืนยันกับเซิร์ฟเวอร์
+    setLiked((v) => !v);
+    setLikeCount((c) => c + (liked ? -1 : 1));
+    try {
+      const res = await fetch(`/api/events/${e.id}/like`, { method: "POST" });
+      if (res.status === 401) { window.location.href = "/login"; return; }
+      const data = await res.json();
+      if (typeof data.liked === "boolean") setLiked(data.liked);
+      if (typeof data.count === "number") setLikeCount(data.count);
+    } catch {
+      // ทำไม่สำเร็จ ย้อนค่ากลับ
+      setLiked((v) => !v);
+      setLikeCount((c) => c + (liked ? 1 : -1));
+    }
+  };
+
   return (
     <Link
       href={`/event/${e.id}`}
@@ -138,6 +168,12 @@ function FeedCard({ e }) {
       )}
 
       <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <button
+          onClick={toggleLike}
+          style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: liked ? "#FF3D8A" : "#8177AE", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+        >
+          <Heart size={14} fill={liked ? "#FF3D8A" : "none"} /> {likeCount}
+        </button>
         <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#8177AE" }}>
           <MessageCircle size={14} /> {e.commentCount ?? 0}
         </span>

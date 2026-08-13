@@ -137,10 +137,10 @@ export default function NavBar({ initialUser }) {
           {user && user.role === "ADMIN" && (
             <MenuLink href="/admin" icon={<Shield size={16} color="#8177AE" />} label="Admin" onClick={() => setMenuOpen(false)} />
           )}
-          <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "6px 4px" }} />
+          <div style={{ height: 1, background: "rgba(255,255,255,0.16)", margin: "8px 4px" }} />
           <MenuLink href="/terms" icon={<FileText size={16} color="#8177AE" />} label="ข้อกำหนดการใช้งาน" onClick={() => setMenuOpen(false)} />
           <MenuLink href="/privacy" icon={<ShieldCheck size={16} color="#8177AE" />} label="นโยบายความเป็นส่วนตัว" onClick={() => setMenuOpen(false)} />
-          <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "6px 4px" }} />
+          <div style={{ height: 1, background: "rgba(255,255,255,0.16)", margin: "8px 4px" }} />
           {user ? (
             <button
               onClick={logout}
@@ -196,8 +196,16 @@ export default function NavBar({ initialUser }) {
         <Plus size={15} /> <span className="mobile-hide">สร้างโพสต์</span>
       </Link>
 
+      {/* โลโก้ — ลอยยึดข้างปุ่มเมนู มุมซ้ายบน ให้เห็นแบรนด์ตลอดแม้ไม่เปิดเมนู */}
+      <Link href="/" className="navbar-logo" aria-label="FanQuestMap หน้าแรก">
+        <MapPin size={19} color="#FFC145" />
+        <span className="navbar-logo-text">
+          FanQuest<span style={{ color: "#FF3D8A" }}>Map</span>
+        </span>
+      </Link>
+
       <header ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 50, backdropFilter: "blur(12px)", background: "rgba(21,15,46,0.92)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "10px 66px", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="navbar-search-row" style={{ maxWidth: 1000, margin: "0 auto", padding: "10px 66px", display: "flex", flexDirection: "column", gap: 10 }}>
 
           {/* แถบล่าง: กล่องค้นหา (ปุ่มเมนู/โปรไฟล์/สร้างโพสต์ย้ายไปลอยมุมจอแล้ว เว้นที่ตรงนี้ไว้ให้ค้นหาเต็มแถว) */}
           <div style={{ position: "relative", width: "100%" }}>
@@ -226,6 +234,35 @@ export default function NavBar({ initialUser }) {
       </header>
 
       <StatsModal open={statsOpen} onClose={() => setStatsOpen(false)} />
+
+      <style jsx>{`
+        .navbar-logo {
+          position: fixed;
+          top: 14px;
+          left: 64px;
+          z-index: 210;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          text-decoration: none;
+          color: #fff;
+          font-weight: 700;
+          font-size: 16px;
+          white-space: nowrap;
+        }
+        .navbar-search-row {
+          padding-left: 200px !important;
+        }
+        @media (max-width: 640px) {
+          .navbar-logo-text {
+            display: none;
+          }
+          .navbar-search-row {
+            padding-left: 66px !important;
+          }
+        }
+      `}</style>
     </>
   );
 }

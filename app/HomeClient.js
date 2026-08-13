@@ -189,7 +189,7 @@ export default function HomeClient({ initialEvents }) {
 
         .map-posts-panel {
           position: absolute;
-          top: 14px;
+          top: 64px;
           right: 14px;
           bottom: 14px;
           width: 300px;

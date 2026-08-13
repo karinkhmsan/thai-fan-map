@@ -1,20 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Image as ImageIcon, MapPin, Heart } from "lucide-react";
 import { catInfo } from "@/lib/categories";
 
 export default function EventCard({ e }) {
   const cat = catInfo(e.category);
-  const [liked, setLiked] = useState(false);
+  // สถานะไลค์ฝังมาจาก server ตั้งแต่แรกแล้ว (ดู attachLikedFlag ในหน้าที่เรียกใช้ EventCard)
+  // ไม่ต้องยิง fetch เช็คทีละการ์ดอีกต่อไป — เดิมทำให้หน้าที่มีหลายโพสต์ยิง request พร้อมกันเป็นสิบๆ ครั้งจนช้า
+  const [liked, setLiked] = useState(!!e.isLiked);
   const [likeCount, setLikeCount] = useState(e.likeCount ?? 0);
-
-  useEffect(() => {
-    fetch(`/api/events/${e.id}/like`)
-      .then((r) => r.json())
-      .then((d) => { if (typeof d.liked === "boolean") setLiked(d.liked); })
-      .catch(() => {});
-  }, [e.id]);
 
   const toggleLike = async (ev) => {
     ev.preventDefault();

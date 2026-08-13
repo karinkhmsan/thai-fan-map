@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { MessageCircle, MapPin, Heart } from "lucide-react";
 import { CATEGORIES, catInfo } from "@/lib/categories";
@@ -63,16 +63,10 @@ export default function FeedClient({ initialEvents }) {
 
 function FeedCard({ e }) {
   const cat = catInfo(e.category);
-  const [liked, setLiked] = useState(false);
+  // สถานะไลค์ฝังมาจาก server ตั้งแต่แรกแล้ว (ดู attachLikedFlag ใน app/feed/page.js)
+  // เดิมการ์ดแต่ละใบยิง fetch เช็คสถานะไลค์เอง ทำให้ฟีดที่มีหลายสิบโพสต์ยิง request พร้อมกันเป็นสิบๆ ครั้งตอนโหลดหน้า — ช้ามาก
+  const [liked, setLiked] = useState(!!e.isLiked);
   const [likeCount, setLikeCount] = useState(e.likeCount ?? 0);
-
-  // เช็คว่าตัวเองไลค์โพสต์นี้อยู่ไหม (โหลดเบาๆ ทีหลัง ไม่บล็อกการแสดงฟีด)
-  useEffect(() => {
-    fetch(`/api/events/${e.id}/like`)
-      .then((r) => r.json())
-      .then((d) => { if (typeof d.liked === "boolean") setLiked(d.liked); })
-      .catch(() => {});
-  }, [e.id]);
 
   const toggleLike = async (ev) => {
     ev.preventDefault();
@@ -116,7 +110,7 @@ function FeedCard({ e }) {
           }}
         >
           {e.authorAvatarUrl ? (
-            <img src={e.authorAvatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src={e.authorAvatarUrl} alt="" loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
             e.authorName?.[0]?.toUpperCase()
           )}
@@ -163,6 +157,8 @@ function FeedCard({ e }) {
         <img
           src={e.images[0]}
           alt=""
+          loading="lazy"
+          decoding="async"
           style={{ width: "100%", height: "clamp(220px, 60vw, 380px)", objectFit: "cover", display: "block" }}
         />
       )}

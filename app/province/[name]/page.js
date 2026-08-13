@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { listEventsLight } from "@/lib/db.mjs";
+import { listEventsLight, attachLikedFlag } from "@/lib/db.mjs";
+import { getCurrentUser } from "@/lib/auth.mjs";
 import EventCard from "@/components/EventCard";
 
-export const revalidate = 10;
-
+// หมายเหตุ: ฝัง isLiked ของผู้ใช้ปัจจุบันมากับโพสต์ตั้งแต่ฝั่ง server เลย (query เดียวรวด)
+// แทนที่จะปล่อยให้ EventCard แต่ละใบยิง fetch เช็คสถานะไลค์ทีละใบ (เดิมคือสาเหตุหลักที่หน้านี้ช้า)
 export default async function ProvincePage({ params }) {
   const provinceName = decodeURIComponent(params.name);
   // กรองที่ฐานข้อมูลเลยด้วย province แทนการโหลดโพสต์ทั้งเว็บมากรองทีหลัง
-  const events = await listEventsLight({ province: provinceName });
+  const [events, user] = await Promise.all([
+    listEventsLight({ province: provinceName }),
+    getCurrentUser(),
+  ]);
+  const eventsWithLiked = await attachLikedFlag(events, user?.id);
 
   return (
     <div>
@@ -16,10 +21,10 @@ export default async function ProvincePage({ params }) {
         <ArrowLeft size={15} /> กลับไปที่แผนที่
       </Link>
       <h2 style={{ fontSize: 22, fontWeight: 600, margin: "10px 0 4px" }}>{provinceName}</h2>
-      <p style={{ color: "#B8AEDB", fontSize: 14, marginBottom: 18 }}>{events.length} งานที่กำลังจัดในจังหวัดนี้</p>
+      <p style={{ color: "#B8AEDB", fontSize: 14, marginBottom: 18 }}>{eventsWithLiked.length} งานที่กำลังจัดในจังหวัดนี้</p>
       <div style={{ display: "grid", gap: 12 }}>
-        {events.map((e) => <EventCard key={e.id} e={e} />)}
-        {events.length === 0 && <p style={{ color: "#5A5182", fontSize: 13 }}>ยังไม่มีงานในจังหวัดนี้</p>}
+        {eventsWithLiked.map((e) => <EventCard key={e.id} e={e} />)}
+        {eventsWithLiked.length === 0 && <p style={{ color: "#5A5182", fontSize: 13 }}>ยังไม่มีงานในจังหวัดนี้</p>}
       </div>
     </div>
   );

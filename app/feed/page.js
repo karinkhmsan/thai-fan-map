@@ -1,10 +1,11 @@
-import { listEventsLight } from "@/lib/db.mjs";
+import { listEventsLight, attachLikedFlag } from "@/lib/db.mjs";
+import { getCurrentUser } from "@/lib/auth.mjs";
 import FeedClient from "./FeedClient";
 
-// cache ไว้ 10 วิ เหมือนหน้าแรก ลดภาระฐานข้อมูลตอนมีคนเข้าฟีดพร้อมกันเยอะๆ
-export const revalidate = 10;
-
+// หมายเหตุ: ฝัง isLiked ของผู้ใช้ปัจจุบันมากับโพสต์ตั้งแต่ฝั่ง server เลย (query เดียวรวด)
+// แทนที่จะปล่อยให้การ์ดแต่ละใบยิง fetch เช็คสถานะไลค์ทีละใบ (เดิมคือสาเหตุหลักที่หน้านี้ช้า)
 export default async function FeedPage() {
-  const events = await listEventsLight();
-  return <FeedClient initialEvents={events} />;
+  const [events, user] = await Promise.all([listEventsLight(), getCurrentUser()]);
+  const eventsWithLiked = await attachLikedFlag(events, user?.id);
+  return <FeedClient initialEvents={eventsWithLiked} />;
 }

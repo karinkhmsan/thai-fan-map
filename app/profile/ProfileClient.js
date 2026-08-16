@@ -1,12 +1,16 @@
 "use client";
 import { useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Trash2, Camera, Link as LinkIcon, Edit3, Check, X } from "lucide-react";
-import Cropper from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 import FollowStats from "@/components/FollowStats";
+
+// โหลด react-easy-crop แบบ dynamic (ssr:false) — ใช้แค่ตอนผู้ใช้กดเปลี่ยนรูปโปรไฟล์เท่านั้น
+// เดิม import ตรงๆ ทำให้ทุกคนที่แค่เข้ามาดูโปรไฟล์ตัวเอง (กรณีส่วนใหญ่) ต้องโหลด+parse ไลบรารีนี้ไปด้วยเสมอ
+const Cropper = dynamic(() => import("react-easy-crop"), { ssr: false });
 
 export default function ProfileClient({ user, myEvents: initialEvents, followerCount = 0, followingCount = 0 }) {
   const router = useRouter();
@@ -136,7 +140,7 @@ export default function ProfileClient({ user, myEvents: initialEvents, followerC
               <button onClick={() => setImageSrc(null)} style={{ padding: "8px 16px", background: "#444", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
                 <X size={14} /> ยกเลิก
               </button>
-              <button onClick={handleCropAndUpload} disabled={uploading} style={{ padding: "8px 16px", background: "#E91E63", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <button onClick={handleCropAndUpload} disabled={uploading} style={{ padding: "8px 16px", background: "#5271FF", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
                 <Check size={14} /> {uploading ? "กำลังอัปโหลด..." : "ตกลง"}
               </button>
             </div>
@@ -156,7 +160,7 @@ export default function ProfileClient({ user, myEvents: initialEvents, followerC
               </div>
             )}
             {isEditing && (
-              <label style={{ position: "absolute", bottom: 0, right: 0, background: "#E91E63", color: "#fff", padding: 6, borderRadius: "50%", cursor: "pointer" }}>
+              <label style={{ position: "absolute", bottom: 0, right: 0, background: "#5271FF", color: "#fff", padding: 6, borderRadius: "50%", cursor: "pointer" }}>
                 <Camera size={14} />
                 <input type="file" accept="image/*" onChange={onFileChange} style={{ display: "none" }} />
               </label>
@@ -167,7 +171,7 @@ export default function ProfileClient({ user, myEvents: initialEvents, followerC
             <div className="profile-username" style={{ fontSize: 18, fontWeight: 600 }}>
               {user.username}
             </div>
-            <div style={{ fontSize: 12, color: "#8177AE", marginBottom: 6 }}>เข้าร่วมเมื่อ {new Date(user.createdAt).toLocaleDateString("th-TH")}</div>
+            <div style={{ fontSize: 12, color: "#7A85B8", marginBottom: 6 }}>เข้าร่วมเมื่อ {new Date(user.createdAt).toLocaleDateString("th-TH")}</div>
             <FollowStats userId={user.id} followerCount={followerCount} followingCount={followingCount} />
           </div>
 
@@ -175,7 +179,7 @@ export default function ProfileClient({ user, myEvents: initialEvents, followerC
             <button onClick={() => setIsEditing(!isEditing)} className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
               <Edit3 size={14} /> {isEditing ? "ยกเลิก" : "แก้ไขโปรไฟล์"}
             </button>
-            <button onClick={logout} className="btn-ghost" style={{ color: "#FF3D8A", whiteSpace: "nowrap" }}>ออกจากระบบ</button>
+            <button onClick={logout} className="btn-ghost" style={{ color: "#49CAFF", whiteSpace: "nowrap" }}>ออกจากระบบ</button>
           </div>
         </div>
 
@@ -183,52 +187,52 @@ export default function ProfileClient({ user, myEvents: initialEvents, followerC
         {isEditing ? (
           <form onSubmit={handleSave} style={{ display: "grid", gap: 12, marginTop: 16 }}>
             <div>
-              <label style={{ fontSize: 12, color: "#B8AEDB" }}>แนะนำตัวเอง (Bio)</label>
+              <label style={{ fontSize: 12, color: "#AEB8E0" }}>แนะนำตัวเอง (Bio)</label>
               <textarea
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 placeholder="เพิ่มคำอธิบายเกี่ยวกับตัวคุณ..."
                 rows={3}
-                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#1a1829", color: "#fff", border: "1px solid #332d4f" }}
+                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#12152E", color: "#fff", border: "1px solid #2A2F5C" }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: "#B8AEDB" }}>Facebook URL</label>
+              <label style={{ fontSize: 12, color: "#AEB8E0" }}>Facebook URL</label>
               <input
                 type="url"
                 value={form.facebookUrl}
                 onChange={(e) => setForm({ ...form, facebookUrl: e.target.value })}
                 placeholder="https://facebook.com/yourprofile"
-                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#1a1829", color: "#fff", border: "1px solid #332d4f" }}
+                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#12152E", color: "#fff", border: "1px solid #2A2F5C" }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: "#B8AEDB" }}>Instagram URL</label>
+              <label style={{ fontSize: 12, color: "#AEB8E0" }}>Instagram URL</label>
               <input
                 type="url"
                 value={form.instagramUrl}
                 onChange={(e) => setForm({ ...form, instagramUrl: e.target.value })}
                 placeholder="https://instagram.com/yourprofile"
-                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#1a1829", color: "#fff", border: "1px solid #332d4f" }}
+                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#12152E", color: "#fff", border: "1px solid #2A2F5C" }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: "#B8AEDB" }}>TikTok URL</label>
+              <label style={{ fontSize: 12, color: "#AEB8E0" }}>TikTok URL</label>
               <input
                 type="url"
                 value={form.tiktokUrl}
                 onChange={(e) => setForm({ ...form, tiktokUrl: e.target.value })}
                 placeholder="https://tiktok.com/@yourprofile"
-                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#1a1829", color: "#fff", border: "1px solid #332d4f" }}
+                style={{ width: "100%", padding: 8, borderRadius: 8, background: "#12152E", color: "#fff", border: "1px solid #2A2F5C" }}
               />
             </div>
-            <button type="submit" style={{ padding: "10px 16px", background: "#E91E63", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, justifySelf: "start" }}>
+            <button type="submit" style={{ padding: "10px 16px", background: "#5271FF", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 500, justifySelf: "start" }}>
               บันทึกการเปลี่ยนแปลง
             </button>
           </form>
         ) : (
           <div style={{ marginTop: 12 }}>
-            {user.bio && <p style={{ fontSize: 14, color: "#D1C9EF", marginBottom: 12 }}>{user.bio}</p>}
+            {user.bio && <p style={{ fontSize: 14, color: "#D6DCFF", marginBottom: 12 }}>{user.bio}</p>}
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 13 }}>
               {user.facebookUrl && (
                 <a href={user.facebookUrl} target="_blank" rel="noreferrer" style={{ color: "#4267B2", display: "flex", alignItems: "center", gap: 4 }}>
@@ -259,14 +263,14 @@ export default function ProfileClient({ user, myEvents: initialEvents, followerC
           <div key={e.id} className="card" style={{ padding: 14, display: "flex", gap: 12, alignItems: "center" }}>
             <Link href={`/event/${e.id}`} style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 500 }}>{e.title}</div>
-              <div style={{ fontSize: 12, color: "#B8AEDB" }}>{e.province} · {e.commentCount ?? 0} ความคิดเห็น</div>
+              <div style={{ fontSize: 12, color: "#AEB8E0" }}>{e.province} · {e.commentCount ?? 0} ความคิดเห็น</div>
             </Link>
-            <button onClick={() => remove(e.id)} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", padding: 6 }}>
+            <button onClick={() => remove(e.id)} style={{ background: "none", border: "none", color: "#49CAFF", cursor: "pointer", padding: 6 }}>
               <Trash2 size={16} />
             </button>
           </div>
         ))}
-        {initialEvents.length === 0 && <p style={{ fontSize: 13, color: "#5A5182" }}>คุณยังไม่เคยโพสต์งานเลย ลองสร้างโพสต์แรกของคุณดูสิ!</p>}
+        {initialEvents.length === 0 && <p style={{ fontSize: 13, color: "#565C99" }}>คุณยังไม่เคยโพสต์งานเลย ลองสร้างโพสต์แรกของคุณดูสิ!</p>}
       </div>
 
       <style jsx>{`

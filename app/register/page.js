@@ -32,14 +32,14 @@ export default function RegisterPage() {
       <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: 18 }}>สมัครสมาชิก</h1>
       <form onSubmit={submit} className="card" style={{ padding: 20, display: "grid", gap: 14 }}>
         <div>
-          <label style={{ fontSize: 13, color: "#B8AEDB", display: "block", marginBottom: 6 }}>ชื่อผู้ใช้</label>
+          <label style={{ fontSize: 13, color: "#AEB8E0", display: "block", marginBottom: 6 }}>ชื่อผู้ใช้</label>
           <input className="input" value={username} onChange={(e) => setUsername(e.target.value)} required />
         </div>
         <div>
-          <label style={{ fontSize: 13, color: "#B8AEDB", display: "block", marginBottom: 6 }}>รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)</label>
+          <label style={{ fontSize: 13, color: "#AEB8E0", display: "block", marginBottom: 6 }}>รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)</label>
           <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
         </div>
-        {error && <p style={{ color: "#FF3D8A", fontSize: 13, margin: 0 }}>{error}</p>}
+        {error && <p style={{ color: "#49CAFF", fontSize: 13, margin: 0 }}>{error}</p>}
         
         <button className="btn-primary" disabled={loading}>{loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}</button>
 
@@ -68,8 +68,8 @@ export default function RegisterPage() {
           สมัคร/เข้าสู่ระบบด้วย Google
         </button>
 
-        <p style={{ fontSize: 13, color: "#8177AE", textAlign: "center", margin: 0 }}>
-          มีบัญชีอยู่แล้ว? <Link href="/login" style={{ color: "#FF3D8A" }}>เข้าสู่ระบบ</Link>
+        <p style={{ fontSize: 13, color: "#7A85B8", textAlign: "center", margin: 0 }}>
+          มีบัญชีอยู่แล้ว? <Link href="/login" style={{ color: "#49CAFF" }}>เข้าสู่ระบบ</Link>
         </p>
       </form>
     </div>

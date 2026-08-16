@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import { getUserByUsername, createUser } from "@/lib/db.mjs";
 import { hashPassword, signSession, sessionCookieOptions } from "@/lib/auth.mjs";
 
-const AVATAR_COLORS = ["#7F77DD", "#FF3D8A", "#35E6C4", "#FFC145", "#5DCAA5", "#F0997B"];
+const AVATAR_COLORS = ["#5271FF", "#49CAFF", "#181D52", "#35398C", "#5DCAA5", "#F0997B"];
 
 export async function POST(req) {
   const { username, password } = await req.json();

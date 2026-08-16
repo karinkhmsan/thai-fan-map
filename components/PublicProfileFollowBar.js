@@ -30,7 +30,7 @@ export default function PublicProfileFollowBar({ targetId, isLoggedIn, initialFo
         style={{
           display: "flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600,
           padding: "7px 16px", borderRadius: 999, cursor: "pointer", whiteSpace: "nowrap",
-          background: following ? "rgba(255,255,255,0.08)" : "#7F49FF",
+          background: following ? "rgba(255,255,255,0.08)" : "#5271FF",
           border: following ? "1px solid rgba(255,255,255,0.15)" : "none",
           color: "#fff",
         }}

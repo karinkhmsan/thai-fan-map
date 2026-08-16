@@ -48,7 +48,7 @@ export default async function PublicProfilePage({ params }) {
               borderRadius: "50%",
               overflow: "hidden",
               flexShrink: 0,
-              background: targetUser.avatarColor || "#E91E63",
+              background: targetUser.avatarColor || "#5271FF",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -65,7 +65,7 @@ export default async function PublicProfilePage({ params }) {
 
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 18, fontWeight: 600 }}>{targetUser.username}</div>
-            <div style={{ fontSize: 12, color: "#8177AE", marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: "#7A85B8", marginTop: 2 }}>
               เข้าร่วมเมื่อ {new Date(targetUser.createdAt).toLocaleDateString("th-TH")}
             </div>
           </div>
@@ -87,7 +87,7 @@ export default async function PublicProfilePage({ params }) {
 
         {/* Bio & Social Links */}
         {targetUser.bio && (
-          <p style={{ fontSize: 14, color: "#D1C9EF", marginBottom: 16, whiteSpace: "pre-line" }}>
+          <p style={{ fontSize: 14, color: "#D6DCFF", marginBottom: 16, whiteSpace: "pre-line" }}>
             {targetUser.bio}
           </p>
         )}
@@ -112,7 +112,7 @@ export default async function PublicProfilePage({ params }) {
       </div>
 
       {/* รายการโพสต์ของผู้ใช้คนนี้ */}
-      <h3 style={{ fontSize: 16, fontWeight: 500, marginBottom: 12, color: "#B8AEDB" }}>
+      <h3 style={{ fontSize: 16, fontWeight: 500, marginBottom: 12, color: "#AEB8E0" }}>
         โพสต์ทั้งหมดของ {targetUser.username} ({targetUser.events.length})
       </h3>
 
@@ -122,7 +122,7 @@ export default async function PublicProfilePage({ params }) {
             <div className="card" style={{ padding: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{e.title}</div>
-                <div style={{ fontSize: 12, color: "#B8AEDB", display: "flex", gap: 12, alignItems: "center" }}>
+                <div style={{ fontSize: 12, color: "#AEB8E0", display: "flex", gap: 12, alignItems: "center" }}>
                   <span style={{ display: "flex", alignItems: "center", gap: 2 }}><MapPin size={12} /> {e.province}</span>
                   <span style={{ display: "flex", alignItems: "center", gap: 2 }}><MessageSquare size={12} /> {e.comments.length} ความคิดเห็น</span>
                 </div>
@@ -132,7 +132,7 @@ export default async function PublicProfilePage({ params }) {
         ))}
 
         {targetUser.events.length === 0 && (
-          <p style={{ fontSize: 13, color: "#5A5182" }}>ผู้ใช้คนนี้ยังไม่เคยสร้างโพสต์</p>
+          <p style={{ fontSize: 13, color: "#565C99" }}>ผู้ใช้คนนี้ยังไม่เคยสร้างโพสต์</p>
         )}
       </div>
     </div>

@@ -15,7 +15,7 @@ export default function FeedClient({ initialEvents }) {
   return (
     <div style={{ maxWidth: 560, margin: "0 auto" }}>
       <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>ฟีดโพสต์</h2>
-      <p style={{ color: "#8177AE", fontSize: 13, marginBottom: 16 }}>
+      <p style={{ color: "#7A85B8", fontSize: 13, marginBottom: 16 }}>
         ไถดูโพสต์งานแฟนคลับล่าสุดจากทุกจังหวัด
       </p>
 
@@ -24,9 +24,9 @@ export default function FeedClient({ initialEvents }) {
           className={`chip ${catFilter === "all" ? "active" : ""}`}
           onClick={() => setCatFilter("all")}
           style={{
-            borderColor: catFilter === "all" ? "#7F77DD" : undefined,
-            background: catFilter === "all" ? "#7F77DD22" : undefined,
-            color: catFilter === "all" ? "#7F77DD" : undefined,
+            borderColor: catFilter === "all" ? "#5271FF" : undefined,
+            background: catFilter === "all" ? "#5271FF22" : undefined,
+            color: catFilter === "all" ? "#5271FF" : undefined,
           }}
         >
           ทั้งหมด
@@ -52,7 +52,7 @@ export default function FeedClient({ initialEvents }) {
           <FeedCard key={e.id} e={e} />
         ))}
         {events.length === 0 && (
-          <p style={{ color: "#5A5182", fontSize: 13, textAlign: "center", padding: "40px 0" }}>
+          <p style={{ color: "#565C99", fontSize: 13, textAlign: "center", padding: "40px 0" }}>
             ยังไม่มีโพสต์ในหมวดนี้
           </p>
         )}
@@ -101,7 +101,7 @@ function FeedCard({ e }) {
             borderRadius: "50%",
             overflow: "hidden",
             flexShrink: 0,
-            background: e.authorAvatarUrl ? "transparent" : e.authorAvatarColor || "#E91E63",
+            background: e.authorAvatarUrl ? "transparent" : e.authorAvatarColor || "#5271FF",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -119,7 +119,7 @@ function FeedCard({ e }) {
           <div style={{ fontSize: 14, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {e.authorName}
           </div>
-          <div style={{ fontSize: 11, color: "#8177AE" }}>{e.createdAt}</div>
+          <div style={{ fontSize: 11, color: "#7A85B8" }}>{e.createdAt}</div>
         </div>
         <span
           style={{
@@ -140,7 +140,7 @@ function FeedCard({ e }) {
         <p
           style={{
             fontSize: 13.5,
-            color: "#E4DEFF",
+            color: "#E4E9FF",
             lineHeight: 1.6,
             margin: 0,
             display: "-webkit-box",
@@ -166,14 +166,14 @@ function FeedCard({ e }) {
       <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <button
           onClick={toggleLike}
-          style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: liked ? "#FF3D8A" : "#8177AE", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+          style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: liked ? "#49CAFF" : "#7A85B8", background: "none", border: "none", padding: 0, cursor: "pointer" }}
         >
-          <Heart size={14} fill={liked ? "#FF3D8A" : "none"} /> {likeCount}
+          <Heart size={14} fill={liked ? "#49CAFF" : "none"} /> {likeCount}
         </button>
-        <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#8177AE" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#7A85B8" }}>
           <MessageCircle size={14} /> {e.commentCount ?? 0}
         </span>
-        <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#8177AE" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#7A85B8" }}>
           <MapPin size={14} /> {e.district ? `${e.district}, ` : ""}{e.province}
         </span>
       </div>

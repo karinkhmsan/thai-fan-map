@@ -87,10 +87,10 @@ export default function DonateBox({ currentUser }) {
   return (
     <div className="card donate-card" style={{ padding: 24, maxWidth: 420, margin: "0 auto", textAlign: "center" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 6 }}>
-        <Heart size={20} color="#FF3D8A" fill="#FF3D8A" />
+        <Heart size={20} color="#49CAFF" fill="#49CAFF" />
         <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>สนับสนุน FanQuestMap</h2>
       </div>
-      <p style={{ color: "#B8AEDB", fontSize: 13, marginTop: 4, marginBottom: 20, lineHeight: 1.6 }}>
+      <p style={{ color: "#AEB8E0", fontSize: 13, marginTop: 4, marginBottom: 20, lineHeight: 1.6 }}>
         เว็บนี้ทำและดูแลกันเองในคอมมูนิตี้ ค่าเซิร์ฟเวอร์และพื้นที่เก็บรูปมาจากแรงสนับสนุนของทุกคน
         ถ้าเว็บนี้มีประโยชน์กับคุณ ร่วมสนับสนุนกันได้ตามกำลังเลยครับ 🙏
       </p>
@@ -103,15 +103,15 @@ export default function DonateBox({ currentUser }) {
         style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
           padding: "13px 16px", borderRadius: 12, marginBottom: 20,
-          background: "linear-gradient(135deg,#FF3D8A,#7F49FF)", color: "#fff",
+          background: "linear-gradient(135deg,#49CAFF,#5271FF)", color: "#fff",
           fontSize: 15, fontWeight: 700, textDecoration: "none",
-          boxShadow: "0 4px 16px rgba(255,61,138,0.35)",
+          boxShadow: "0 4px 16px rgba(73,202,255,0.35)",
         }}
       >
         <Heart size={17} fill="#fff" /> โดเนทผ่าน EasyDonate <ExternalLink size={14} />
       </a>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 18px", color: "#5A5182", fontSize: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 18px", color: "#565C99", fontSize: 12 }}>
         <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)" }} />
         หรือสแกน QR พร้อมเพย์เอง
         <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)" }} />
@@ -127,7 +127,7 @@ export default function DonateBox({ currentUser }) {
             className="chip"
             style={
               activeAmount === a
-                ? { background: "linear-gradient(135deg,#FF3D8A,#7F49FF)", borderColor: "transparent", color: "#fff" }
+                ? { background: "linear-gradient(135deg,#49CAFF,#5271FF)", borderColor: "transparent", color: "#fff" }
                 : {}
             }
           >
@@ -157,7 +157,7 @@ export default function DonateBox({ currentUser }) {
         )}
       </div>
 
-      <p style={{ fontSize: 12, color: "#8177AE", marginTop: 12 }}>
+      <p style={{ fontSize: 12, color: "#7A85B8", marginTop: 12 }}>
         สแกนด้วยแอปธนาคารเพื่อสนับสนุนผ่านพร้อมเพย์
         {activeAmount > 0 ? ` จำนวน ${activeAmount} บาท` : ""}
       </p>
@@ -177,17 +177,17 @@ export default function DonateBox({ currentUser }) {
           border: "1px solid rgba(255,255,255,0.15)",
           cursor: "pointer",
           fontSize: 13,
-          color: "#E4DEFF",
+          color: "#E4E9FF",
         }}
       >
         พร้อมเพย์: {PROMPTPAY_ID}
-        {copied ? <Check size={14} color="#3BE249" /> : <Copy size={14} color="#8177AE" />}
+        {copied ? <Check size={14} color="#3BE249" /> : <Copy size={14} color="#7A85B8" />}
       </div>
 
       {/* ฟอร์มแนบสลิปเพื่อยืนยันการโอน */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 20, textAlign: "left" }}>
         <h3 style={{ fontSize: 14, fontWeight: 600, margin: "0 0 4px" }}>โอนผ่านพร้อมเพย์เอง? แนบสลิปยืนยันตรงนี้</h3>
-        <p style={{ fontSize: 12, color: "#8177AE", margin: "0 0 14px", lineHeight: 1.6 }}>
+        <p style={{ fontSize: 12, color: "#7A85B8", margin: "0 0 14px", lineHeight: 1.6 }}>
           ถ้าไม่สะดวกผ่าน EasyDonate ด้านบน สแกน QR พร้อมเพย์ได้เลย แต่ระบบไม่รู้อัตโนมัติว่าใครโอนมา
           ต้องแนบสลิปไว้ให้แอดมินตรวจสอบและกดยืนยันก่อน ถึงจะขึ้นชื่อในรายชื่อผู้สนับสนุน (ดูได้จากเมนู 3 ขีด → สถิติ)
         </p>
@@ -200,7 +200,7 @@ export default function DonateBox({ currentUser }) {
           </div>
         ) : (
           <>
-            <label style={{ display: "block", fontSize: 12, color: "#B8AEDB", marginBottom: 6 }}>ชื่อที่จะแสดง (ถ้าไม่กรอกจะขึ้นว่า "ผู้สนับสนุนนิรนาม")</label>
+            <label style={{ display: "block", fontSize: 12, color: "#AEB8E0", marginBottom: 6 }}>ชื่อที่จะแสดง (ถ้าไม่กรอกจะขึ้นว่า "ผู้สนับสนุนนิรนาม")</label>
             <input
               className="input"
               value={donorName}
@@ -209,7 +209,7 @@ export default function DonateBox({ currentUser }) {
               style={{ marginBottom: 12 }}
             />
 
-            <label style={{ display: "block", fontSize: 12, color: "#B8AEDB", marginBottom: 6 }}>จำนวนเงินที่โอน (บาท) — ใช้ให้แอดมินเช็คกับสลิปเท่านั้น</label>
+            <label style={{ display: "block", fontSize: 12, color: "#AEB8E0", marginBottom: 6 }}>จำนวนเงินที่โอน (บาท) — ใช้ให้แอดมินเช็คกับสลิปเท่านั้น</label>
             <input
               className="input"
               type="number"
@@ -220,14 +220,14 @@ export default function DonateBox({ currentUser }) {
               style={{ marginBottom: 12 }}
             />
 
-            <label style={{ display: "block", fontSize: 12, color: "#B8AEDB", marginBottom: 6 }}>รูปสลิปโอนเงิน</label>
+            <label style={{ display: "block", fontSize: 12, color: "#AEB8E0", marginBottom: 6 }}>รูปสลิปโอนเงิน</label>
             {slipPreview ? (
               <div style={{ position: "relative", width: 110, height: 110, marginBottom: 12 }}>
                 <img src={slipPreview} alt="สลิป" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 10 }} />
                 <button
                   type="button"
                   onClick={() => { setSlipFile(null); setSlipPreview(null); }}
-                  style={{ position: "absolute", top: -6, right: -6, background: "#FF3D8A", border: "none", borderRadius: "50%", width: 20, height: 20, color: "#fff", cursor: "pointer" }}
+                  style={{ position: "absolute", top: -6, right: -6, background: "#49CAFF", border: "none", borderRadius: "50%", width: 20, height: 20, color: "#fff", cursor: "pointer" }}
                 >
                   <X size={12} />
                 </button>
@@ -235,14 +235,14 @@ export default function DonateBox({ currentUser }) {
             ) : (
               <div
                 onClick={() => fileRef.current.click()}
-                style={{ width: "100%", padding: "16px 12px", borderRadius: 10, border: "1.5px dashed rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer", color: "#8177AE", fontSize: 13, marginBottom: 12 }}
+                style={{ width: "100%", padding: "16px 12px", borderRadius: 10, border: "1.5px dashed rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer", color: "#7A85B8", fontSize: 13, marginBottom: 12 }}
               >
                 <Upload size={16} /> แตะเพื่อเลือกรูปสลิป
               </div>
             )}
             <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => pickSlip(e.target.files?.[0])} />
 
-            {submitError && <p style={{ color: "#FF3D8A", fontSize: 12, margin: "0 0 10px" }}>{submitError}</p>}
+            {submitError && <p style={{ color: "#49CAFF", fontSize: 12, margin: "0 0 10px" }}>{submitError}</p>}
 
             <button
               onClick={submitSlip}

@@ -65,9 +65,9 @@ export default function HomeClient({ initialEvents }) {
             className={`chip ${catFilter === "all" ? "active" : ""}`}
             onClick={() => setCatFilter("all")}
             style={{
-              borderColor: catFilter === "all" ? "#7F77DD" : undefined,
-              background: catFilter === "all" ? "#7F77DD22" : "rgba(21,15,46,0.85)",
-              color: catFilter === "all" ? "#7F77DD" : undefined,
+              borderColor: catFilter === "all" ? "#5271FF" : undefined,
+              background: catFilter === "all" ? "#5271FF22" : "rgba(11,14,46,0.85)",
+              color: catFilter === "all" ? "#5271FF" : undefined,
             }}
           >
             ทั้งหมด
@@ -79,7 +79,7 @@ export default function HomeClient({ initialEvents }) {
               onClick={() => setCatFilter(c.id)}
               style={{
                 borderColor: catFilter === c.id ? c.color : undefined,
-                background: catFilter === c.id ? c.color + "22" : "rgba(21,15,46,0.85)",
+                background: catFilter === c.id ? c.color + "22" : "rgba(11,14,46,0.85)",
                 color: catFilter === c.id ? c.color : undefined,
               }}
             >
@@ -162,7 +162,7 @@ export default function HomeClient({ initialEvents }) {
 
         .map-title {
           padding: 12px 14px;
-          background: rgba(21, 15, 46, 0.85);
+          background: rgba(11,14,46, 0.85);
           backdrop-filter: blur(10px);
         }
         .map-title h1 {
@@ -172,7 +172,7 @@ export default function HomeClient({ initialEvents }) {
         }
         .map-title p {
           font-size: 12px;
-          color: #b8aedb;
+          color: #AEB8E0;
           margin: 0;
         }
 
@@ -195,7 +195,7 @@ export default function HomeClient({ initialEvents }) {
           width: 300px;
           z-index: 30;
           transform: translateZ(0);
-          background: rgba(21, 15, 46, 0.9);
+          background: rgba(11,14,46, 0.9);
           backdrop-filter: blur(12px);
           display: flex;
           flex-direction: column;
@@ -220,7 +220,7 @@ export default function HomeClient({ initialEvents }) {
           padding: 20px 10px;
           text-align: center;
           font-size: 13px;
-          color: #5a5182;
+          color: #565C99;
         }
 
         :global(.map-post-item) {
@@ -261,7 +261,7 @@ export default function HomeClient({ initialEvents }) {
         }
         :global(.map-post-loc) {
           font-size: 11px;
-          color: #8177ae;
+          color: #7A85B8;
           display: flex;
           align-items: center;
           gap: 3px;
@@ -283,7 +283,7 @@ export default function HomeClient({ initialEvents }) {
           width: 100%;
           max-height: 72vh;
           border-radius: 20px 20px 0 0;
-          background: #191332;
+          background: #141A3D;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           display: flex;
           flex-direction: column;
@@ -309,7 +309,7 @@ export default function HomeClient({ initialEvents }) {
         .mobile-sheet-header button {
           background: none;
           border: none;
-          color: #b8aedb;
+          color: #AEB8E0;
           cursor: pointer;
           padding: 4px;
         }
@@ -346,7 +346,7 @@ export default function HomeClient({ initialEvents }) {
             left: 50%;
             transform: translateX(-50%) translateZ(0);
             z-index: 30;
-            background: linear-gradient(135deg, #ff3d8a, #7f49ff);
+            background: linear-gradient(135deg, #49CAFF, #5271FF);
             color: #fff;
             border: none;
             border-radius: 999px;

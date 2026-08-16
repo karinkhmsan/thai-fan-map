@@ -115,13 +115,13 @@ export default function EditEventClient({ event }) {
 
   return (
     <div>
-      <Link href={`/event/${event.id}`} style={{ display: "flex", alignItems: "center", gap: 6, color: "#B8AEDB", fontSize: 13, textDecoration: "none", marginBottom: 12 }}>
+      <Link href={`/event/${event.id}`} style={{ display: "flex", alignItems: "center", gap: 6, color: "#AEB8E0", fontSize: 13, textDecoration: "none", marginBottom: 12 }}>
         <ArrowLeft size={15} /> ย้อนกลับ
       </Link>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "0 0 18px" }}>
         <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>แก้ไขโพสต์</h1>
-        <button onClick={remove} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
+        <button onClick={remove} style={{ background: "none", border: "none", color: "#49CAFF", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
           <Trash2 size={15} /> ลบโพสต์
         </button>
       </div>
@@ -171,13 +171,13 @@ export default function EditEventClient({ event }) {
               <div key={i} style={{ position: "relative", width: 84, height: 84 }}>
                 <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 10 }} />
                 <button type="button" onClick={() => removeImage(i)}
-                  style={{ position: "absolute", top: -6, right: -6, background: "#FF3D8A", border: "none", borderRadius: "50%", width: 20, height: 20, color: "#fff", cursor: "pointer" }}>
+                  style={{ position: "absolute", top: -6, right: -6, background: "#49CAFF", border: "none", borderRadius: "50%", width: 20, height: 20, color: "#fff", cursor: "pointer" }}>
                   <X size={12} />
                 </button>
               </div>
             ))}
             {images.length < MAX_IMAGES && (
-              <div onClick={() => !preparing && fileRef.current.click()} style={{ width: 84, height: 84, borderRadius: 10, border: "1.5px dashed rgba(255,255,255,0.25)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: preparing ? "wait" : "pointer", color: "#8177AE", gap: 4, opacity: preparing ? 0.5 : 1 }}>
+              <div onClick={() => !preparing && fileRef.current.click()} style={{ width: 84, height: 84, borderRadius: 10, border: "1.5px dashed rgba(255,255,255,0.25)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: preparing ? "wait" : "pointer", color: "#7A85B8", gap: 4, opacity: preparing ? 0.5 : 1 }}>
                 <Plus size={18} /><span style={{ fontSize: 11 }}>{preparing ? "กำลังเตรียมรูป..." : "เพิ่มรูป"}</span>
               </div>
             )}
@@ -195,7 +195,7 @@ export default function EditEventClient({ event }) {
           />
         </Field>
 
-        {error && <p style={{ color: "#FF3D8A", fontSize: 13, margin: 0 }}>{error}</p>}
+        {error && <p style={{ color: "#49CAFF", fontSize: 13, margin: 0 }}>{error}</p>}
         <button disabled={!canSubmit} onClick={submit} className="btn-primary" style={{ opacity: canSubmit ? 1 : 0.4, padding: 12, fontSize: 15 }}>
           {submitting ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
         </button>
@@ -207,7 +207,7 @@ export default function EditEventClient({ event }) {
 function Field({ label, children }) {
   return (
     <div>
-      <label style={{ display: "block", fontSize: 13, color: "#B8AEDB", marginBottom: 6 }}>{label}</label>
+      <label style={{ display: "block", fontSize: 13, color: "#AEB8E0", marginBottom: 6 }}>{label}</label>
       {children}
     </div>
   );

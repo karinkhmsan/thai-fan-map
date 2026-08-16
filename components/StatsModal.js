@@ -34,7 +34,7 @@ export default function StatsModal({ open, onClose }) {
       <div
         onClick={(e) => e.stopPropagation()}
         className="card stats-modal"
-        style={{ width: "100%", maxWidth: 460, maxHeight: "80vh", display: "flex", flexDirection: "column", background: "#191332", overflow: "hidden" }}
+        style={{ width: "100%", maxWidth: 460, maxHeight: "80vh", display: "flex", flexDirection: "column", background: "#141A3D", overflow: "hidden" }}
       >
         {/* หัว modal */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 20px 12px" }}>
@@ -63,12 +63,12 @@ export default function StatsModal({ open, onClose }) {
                     <div key={p.province}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
                         <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <MapPin size={13} color="#FFC145" /> {p.province}
+                          <MapPin size={13} color="#FFFFFF" /> {p.province}
                         </span>
-                        <span style={{ color: "#B8AEDB" }}>{p.count} งาน</span>
+                        <span style={{ color: "#AEB8E0" }}>{p.count} งาน</span>
                       </div>
                       <div style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
-                        <div style={{ height: "100%", width: `${(p.count / maxCount) * 100}%`, background: "linear-gradient(90deg,#FF3D8A,#7F49FF)", borderRadius: 999 }} />
+                        <div style={{ height: "100%", width: `${(p.count / maxCount) * 100}%`, background: "linear-gradient(90deg,#49CAFF,#5271FF)", borderRadius: 999 }} />
                       </div>
                     </div>
                   ))}
@@ -82,7 +82,7 @@ export default function StatsModal({ open, onClose }) {
               <Link
                 href="/support"
                 onClick={onClose}
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "10px 14px", borderRadius: 10, marginBottom: 14, background: "linear-gradient(135deg,#FF3D8A,#7F49FF)", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "10px 14px", borderRadius: 10, marginBottom: 14, background: "linear-gradient(135deg,#49CAFF,#5271FF)", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
               >
                 <Heart size={14} /> เป็นผู้สนับสนุน
               </Link>
@@ -120,7 +120,7 @@ function TabButton({ active, onClick, children }) {
         border: "none",
         cursor: "pointer",
         background: active ? "rgba(255,255,255,0.12)" : "transparent",
-        color: active ? "#fff" : "#8177AE",
+        color: active ? "#fff" : "#7A85B8",
         fontWeight: active ? 600 : 400,
       }}
     >
@@ -130,9 +130,9 @@ function TabButton({ active, onClick, children }) {
 }
 
 function Loading() {
-  return <p style={{ fontSize: 13, color: "#5A5182", textAlign: "center", padding: "20px 0" }}>กำลังโหลด...</p>;
+  return <p style={{ fontSize: 13, color: "#565C99", textAlign: "center", padding: "20px 0" }}>กำลังโหลด...</p>;
 }
 
 function Empty({ text }) {
-  return <p style={{ fontSize: 13, color: "#5A5182", textAlign: "center", padding: "20px 0" }}>{text}</p>;
+  return <p style={{ fontSize: 13, color: "#565C99", textAlign: "center", padding: "20px 0" }}>{text}</p>;
 }

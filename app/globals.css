@@ -8,15 +8,15 @@
 html, body {
   margin: 0;
   font-family: 'Kanit', sans-serif;
-  background: linear-gradient(180deg,#150F2E,#1B1440 40%,#150F2E);
-  color: #F5F1FF;
+  background: linear-gradient(180deg,#0B0E2E,#14183D 40%,#0B0E2E);
+  color: #F0F3FF;
   min-height: 100vh;
 }
 a { color: inherit; text-decoration: none; }
-::placeholder { color: #8177AE; }
+::placeholder { color: #7A85B8; }
 input, textarea, select, button { font-family: 'Kanit', sans-serif; }
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #4A3F7A; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #35398C; border-radius: 4px; }
 
 .card {
   background: rgba(255,255,255,0.05);
@@ -24,7 +24,7 @@ input, textarea, select, button { font-family: 'Kanit', sans-serif; }
   border-radius: 16px;
 }
 .btn-primary {
-  background: linear-gradient(135deg,#FF3D8A,#7F49FF);
+  background: linear-gradient(135deg,#49CAFF,#5271FF);
   border: none; color: #fff; border-radius: 10px; cursor: pointer;
   padding: 10px 18px; font-size: 14px; font-weight: 500;
 }
@@ -37,32 +37,32 @@ input, textarea, select, button { font-family: 'Kanit', sans-serif; }
   border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 14px; outline: none;
 }
 select.input {
-  color: #E4DEFF;
-  background-color: #1A1530;
+  color: #E4E9FF;
+  background-color: #12152E;
 }
 
 select.input option {
-  color: #1a1625;
+  color: #181D52;
   background-color: #ffffff;
 }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
   padding: 8px 14px; font-size: 13px; cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
-  background: transparent; color: #B8AEDB;
+  background: transparent; color: #AEB8E0;
 }
 .chip.active { color: #fff; }
 
 /* leaflet ปรับสไตล์ปุ่ม/attribution ให้เข้ากับธีมเว็บ (ตัวแผนที่เองใช้สีจริงจาก tile) */
 .leaflet-container { background: #E8E6E1 !important; z-index: 0; }
 .leaflet-control-attribution {
-  background: rgba(21,15,46,0.75) !important;
-  color: #8177AE !important;
+  background: rgba(11,14,46,0.75) !important;
+  color: #7A85B8 !important;
   font-size: 10px !important;
   backdrop-filter: blur(4px);
 }
-.leaflet-control-attribution a { color: #B8AEDB !important; }
+.leaflet-control-attribution a { color: #AEB8E0 !important; }
 .leaflet-control-zoom a {
-  background: rgba(21,15,46,0.9) !important;
+  background: rgba(11,14,46,0.9) !important;
   color: #fff !important;
   border-color: rgba(255,255,255,0.15) !important;
 }

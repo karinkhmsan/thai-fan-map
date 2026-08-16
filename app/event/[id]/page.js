@@ -6,7 +6,7 @@ export default async function EventPage({ params }) {
   const event = await getEvent(params.id);
   const user = await getCurrentUser();
   if (!event) {
-    return <p style={{ color: "#8177AE" }}>ไม่พบโพสต์นี้ อาจถูกลบไปแล้ว</p>;
+    return <p style={{ color: "#7A85B8" }}>ไม่พบโพสต์นี้ อาจถูกลบไปแล้ว</p>;
   }
   const { liked } = await getLikeInfo(params.id, user?.id);
   const follow = event.authorId ? await getFollowInfo(event.authorId, user?.id) : null;

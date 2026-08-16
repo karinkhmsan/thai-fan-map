@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       </p>
 
       <Section title="1. ข้อมูลที่เราเก็บ">
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4DEFF", margin: "0 0 6px" }}>1.1 ข้อมูลบัญชีผู้ใช้</h3>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4E9FF", margin: "0 0 6px" }}>1.1 ข้อมูลบัญชีผู้ใช้</h3>
         <List
           items={[
             "ชื่อผู้ใช้ (username)",
@@ -19,14 +19,14 @@ export default function PrivacyPage() {
             "รูปโปรไฟล์ (ถ้ามีการอัปโหลดหรือดึงมาจาก Google)",
           ]}
         />
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4DEFF", margin: "16px 0 6px" }}>1.2 เนื้อหาที่คุณโพสต์</h3>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4E9FF", margin: "16px 0 6px" }}>1.2 เนื้อหาที่คุณโพสต์</h3>
         <List
           items={[
             "ข้อความ รูปภาพ และตำแหน่งที่ตั้ง (จังหวัด/อำเภอ และตำแหน่งปักหมุดแม่นยำหากคุณเลือกระบุ) ในโพสต์งานอีเวนต์",
             "ความคิดเห็นที่คุณเขียน",
           ]}
         />
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4DEFF", margin: "16px 0 6px" }}>1.3 ข้อมูลการสนับสนุน (โดเนท)</h3>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4E9FF", margin: "16px 0 6px" }}>1.3 ข้อมูลการสนับสนุน (โดเนท)</h3>
         <List
           items={[
             "ชื่อที่คุณกรอกเพื่อแสดงเป็นผู้สนับสนุน",
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
             "หากสนับสนุนผ่าน EasyDonate ข้อมูลชื่อ/ข้อความที่ระบบได้รับจะมาจาก EasyDonate โดยตรง",
           ]}
         />
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4DEFF", margin: "16px 0 6px" }}>1.4 ข้อมูลทางเทคนิค</h3>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#E4E9FF", margin: "16px 0 6px" }}>1.4 ข้อมูลทางเทคนิค</h3>
         <List
           items={[
             "คุกกี้สำหรับเก็บสถานะการเข้าสู่ระบบ (session)",
@@ -69,8 +69,8 @@ export default function PrivacyPage() {
             ["EasyDonate", "ประมวลผลการสนับสนุน/โดเนท"],
           ].map(([name, desc]) => (
             <div key={name} style={{ display: "flex", gap: 8, padding: "8px 10px", background: "rgba(255,255,255,0.04)", borderRadius: 8 }}>
-              <span style={{ fontWeight: 600, minWidth: 130, color: "#FFC145" }}>{name}</span>
-              <span style={{ color: "#B8AEDB" }}>{desc}</span>
+              <span style={{ fontWeight: 600, minWidth: 130, color: "#FFFFFF" }}>{name}</span>
+              <span style={{ color: "#AEB8E0" }}>{desc}</span>
             </div>
           ))}
         </div>

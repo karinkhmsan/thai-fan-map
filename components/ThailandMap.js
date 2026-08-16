@@ -57,8 +57,8 @@ function pinIcon(imageUrl) {
   return new L.DivIcon({
     html: `
       <div style="position:relative;width:48px;height:48px;">
-        <div style="position:absolute;inset:0;border-radius:50%;background:#191332 url('${imageUrl}') center/cover;border:3px solid #FF3D8A;box-shadow:0 2px 10px rgba(0,0,0,0.5);"></div>
-        <div style="position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #FF3D8A;"></div>
+        <div style="position:absolute;inset:0;border-radius:50%;background:#141A3D url('${imageUrl}') center/cover;border:3px solid #49CAFF;box-shadow:0 2px 10px rgba(0,0,0,0.5);"></div>
+        <div style="position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #49CAFF;"></div>
       </div>`,
     className: "",
     iconSize: [48, 54],
@@ -123,12 +123,12 @@ export default function ThailandMap({ eventsByProvince, pinnedEvents = [], catCo
             style={(feature) => {
               const name = findFeatureProvinceName(feature);
               const hasEvents = name && eventsByProvince[name]?.length;
-              const color = hasEvents ? catColor(eventsByProvince[name][0].category) : "#7F49FF";
+              const color = hasEvents ? catColor(eventsByProvince[name][0].category) : "#5271FF";
               return {
                 color,
                 weight: hasEvents ? 2 : 1.4,
                 opacity: hasEvents ? 0.9 : 0.55,
-                fillColor: hasEvents ? catColor(eventsByProvince[name][0].category) : "#7F49FF",
+                fillColor: hasEvents ? catColor(eventsByProvince[name][0].category) : "#5271FF",
                 fillOpacity: hasEvents ? 0.28 : 0.04,
               };
             }}
@@ -152,7 +152,7 @@ export default function ThailandMap({ eventsByProvince, pinnedEvents = [], catCo
               key={p.name}
               center={[p.lat, p.lon]}
               radius={evs.length > 2 ? 9 : 6}
-              pathOptions={{ color: "#150F2E", weight: 1.5, fillColor: catColor(evs[0].category), fillOpacity: 0.95 }}
+              pathOptions={{ color: "#0B0E2E", weight: 1.5, fillColor: catColor(evs[0].category), fillOpacity: 0.95 }}
               eventHandlers={{ click: () => onPinClick(p.name) }}
             >
               <Tooltip>{p.name} · {evs.length} งาน</Tooltip>
@@ -175,7 +175,7 @@ export default function ThailandMap({ eventsByProvince, pinnedEvents = [], catCo
       </MapContainer>
 
       {geoFailed && (
-        <div style={{ position: "absolute", bottom: 90, left: 14, right: 14, zIndex: 5, background: "rgba(21,15,46,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#B8AEDB" }}>
+        <div style={{ position: "absolute", bottom: 90, left: 14, right: 14, zIndex: 5, background: "rgba(11,14,46,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#AEB8E0" }}>
           ยังไม่พบไฟล์ขอบเขตจังหวัดจริง — รันคำสั่ง <code>npm run setup:geo</code> แล้วรีสตาร์ตแอป (ตอนนี้ใช้หมุดแสดงตำแหน่งแทน)
         </div>
       )}

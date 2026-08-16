@@ -40,18 +40,18 @@ export default function FollowStats({ userId, followerCount, followingCount }) {
           <div
             onClick={(e) => e.stopPropagation()}
             className="card"
-            style={{ width: "100%", maxWidth: 380, maxHeight: "70vh", overflowY: "auto", background: "#191332", padding: 0 }}
+            style={{ width: "100%", maxWidth: 380, maxHeight: "70vh", overflowY: "auto", background: "#141A3D", padding: 0 }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               <span style={{ fontWeight: 600, fontSize: 15 }}>{modal === "followers" ? "ผู้ติดตาม" : "กำลังติดตาม"}</span>
-              <button onClick={() => setModal(null)} style={{ background: "none", border: "none", color: "#8177AE", cursor: "pointer", display: "flex" }}>
+              <button onClick={() => setModal(null)} style={{ background: "none", border: "none", color: "#7A85B8", cursor: "pointer", display: "flex" }}>
                 <X size={18} />
               </button>
             </div>
             <div style={{ padding: 6 }}>
-              {loading && <p style={{ padding: 14, fontSize: 13, color: "#8177AE" }}>กำลังโหลด...</p>}
+              {loading && <p style={{ padding: 14, fontSize: 13, color: "#7A85B8" }}>กำลังโหลด...</p>}
               {!loading && list.length === 0 && (
-                <p style={{ padding: 14, fontSize: 13, color: "#5A5182" }}>
+                <p style={{ padding: 14, fontSize: 13, color: "#565C99" }}>
                   {modal === "followers" ? "ยังไม่มีผู้ติดตาม" : "ยังไม่ได้ติดตามใคร"}
                 </p>
               )}
@@ -60,11 +60,11 @@ export default function FollowStats({ userId, followerCount, followingCount }) {
                   key={u.id}
                   href={`/profile/${u.id}`}
                   onClick={() => setModal(null)}
-                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, textDecoration: "none", color: "#E4DEFF" }}
+                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, textDecoration: "none", color: "#E4E9FF" }}
                 >
                   <div style={{
                     width: 34, height: 34, borderRadius: "50%", overflow: "hidden", flexShrink: 0,
-                    background: u.avatarUrl ? "transparent" : (u.avatarColor || "#E91E63"),
+                    background: u.avatarUrl ? "transparent" : (u.avatarColor || "#5271FF"),
                     display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600,
                   }}>
                     {u.avatarUrl ? (
@@ -85,5 +85,5 @@ export default function FollowStats({ userId, followerCount, followingCount }) {
 }
 
 const statBtnStyle = {
-  background: "none", border: "none", color: "#8177AE", fontSize: 13, cursor: "pointer", padding: 0,
+  background: "none", border: "none", color: "#7A85B8", fontSize: 13, cursor: "pointer", padding: 0,
 };

@@ -107,7 +107,7 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
 
   return (
     <div>
-      <button onClick={() => router.back()} style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", color: "#B8AEDB", fontSize: 13, cursor: "pointer", padding: 0 }}>
+      <button onClick={() => router.back()} style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", color: "#AEB8E0", fontSize: 13, cursor: "pointer", padding: 0 }}>
         <ArrowLeft size={15} /> ย้อนกลับ
       </button>
 
@@ -117,7 +117,7 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
               <div style={{
                 width: 42, height: 42, borderRadius: "50%", overflow: "hidden", flexShrink: 0,
-                background: event.authorAvatarUrl ? "transparent" : (event.authorAvatarColor || "#E91E63"),
+                background: event.authorAvatarUrl ? "transparent" : (event.authorAvatarColor || "#5271FF"),
                 display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 600,
               }}>
                 {event.authorAvatarUrl ? (
@@ -134,7 +134,7 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
                 ) : (
                   <span style={{ fontWeight: 600, fontSize: 15 }}>{event.authorName}</span>
                 )}
-                <div style={{ fontSize: 12, color: "#8177AE" }}>{event.createdAt}</div>
+                <div style={{ fontSize: 12, color: "#7A85B8" }}>{event.createdAt}</div>
               </div>
               {!isOwner && event.authorId && (
                 <button
@@ -142,7 +142,7 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
                   style={{
                     display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600,
                     padding: "5px 12px", borderRadius: 999, cursor: "pointer", marginLeft: 4,
-                    background: following ? "rgba(255,255,255,0.08)" : "#7F49FF",
+                    background: following ? "rgba(255,255,255,0.08)" : "#5271FF",
                     border: following ? "1px solid rgba(255,255,255,0.15)" : "none",
                     color: "#fff",
                   }}
@@ -153,10 +153,10 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
             </div>
             {isOwner && (
               <div style={{ display: "flex", gap: 14, flexShrink: 0 }}>
-                <Link href={`/event/${event.id}/edit`} style={{ background: "none", border: "none", color: "#FFC145", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none" }}>
+                <Link href={`/event/${event.id}/edit`} style={{ background: "none", border: "none", color: "#FFFFFF", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none" }}>
                   <Pencil size={15} /> แก้ไข
                 </Link>
-                <button onClick={remove} style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
+                <button onClick={remove} style={{ background: "none", border: "none", color: "#49CAFF", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
                   <Trash2 size={15} /> ลบโพสต์
                 </button>
               </div>
@@ -166,7 +166,7 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
                 onClick={reportPost}
                 disabled={eventReported}
                 title={eventReported ? "รายงานแล้ว" : "รายงานโพสต์นี้"}
-                style={{ background: "none", border: "none", color: eventReported ? "#5A5182" : "#8177AE", cursor: eventReported ? "default" : "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, flexShrink: 0 }}
+                style={{ background: "none", border: "none", color: eventReported ? "#565C99" : "#7A85B8", cursor: eventReported ? "default" : "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, flexShrink: 0 }}
               >
                 <Flag size={13} /> {eventReported ? "รายงานแล้ว" : "รายงาน"}
               </button>
@@ -177,12 +177,12 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
 
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 10 }}>
             <span style={{ fontSize: 13, color: cat.color, fontWeight: 600 }}>#{cat.label}</span>
-            <Link href={`/province/${encodeURIComponent(event.province)}`} style={{ display: "flex", alignItems: "center", gap: 4, color: "#8177AE", fontSize: 13, textDecoration: "none" }}>
+            <Link href={`/province/${encodeURIComponent(event.province)}`} style={{ display: "flex", alignItems: "center", gap: 4, color: "#7A85B8", fontSize: 13, textDecoration: "none" }}>
               <MapPin size={13} /> {event.district ? `${event.district}, ` : ""}{event.province}
             </Link>
           </div>
 
-          <p style={{ fontSize: 15, lineHeight: 1.7, color: "#E4DEFF", whiteSpace: "pre-wrap", margin: "0 0 16px" }}>{event.description}</p>
+          <p style={{ fontSize: 15, lineHeight: 1.7, color: "#E4E9FF", whiteSpace: "pre-wrap", margin: "0 0 16px" }}>{event.description}</p>
 
           {hasPin && (
             <div style={{ marginBottom: 16 }}>
@@ -191,7 +191,7 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
                 href={`https://www.google.com/maps/dir/?api=1&destination=${event.lat},${event.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 8, fontSize: 12, color: "#7F49FF", textDecoration: "none" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 8, fontSize: 12, color: "#5271FF", textDecoration: "none" }}
               >
                 <Navigation size={12} /> นำทางไปยังจุดนี้
               </a>
@@ -206,15 +206,15 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
         <div style={{ padding: "12px 20px", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", gap: 18, fontSize: 13 }}>
           <button
             onClick={toggleLike}
-            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", padding: 0, cursor: "pointer", color: liked ? "#FF3D8A" : "#8177AE" }}
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", padding: 0, cursor: "pointer", color: liked ? "#49CAFF" : "#7A85B8" }}
           >
-            <Heart size={16} fill={liked ? "#FF3D8A" : "none"} /> {likeCount} ไลค์
+            <Heart size={16} fill={liked ? "#49CAFF" : "none"} /> {likeCount} ไลค์
           </button>
-          <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#8177AE" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#7A85B8" }}>
             <MessageCircle size={16} /> {event.comments.length} ความคิดเห็น
           </span>
           {followerCount > 0 && !isOwner && (
-            <span style={{ color: "#5A5182" }}>ผู้ติดตาม {followerCount}</span>
+            <span style={{ color: "#565C99" }}>ผู้ติดตาม {followerCount}</span>
           )}
         </div>
 
@@ -229,19 +229,19 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
                 <div key={c.id} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "10px 12px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3, gap: 8 }}>
                     {c.authorId ? (
-                      <Link href={`/profile/${c.authorId}`} style={{ fontSize: 13, fontWeight: 500, color: "#FFC145", textDecoration: "none" }}>
+                      <Link href={`/profile/${c.authorId}`} style={{ fontSize: 13, fontWeight: 500, color: "#FFFFFF", textDecoration: "none" }}>
                         {c.authorName}
                       </Link>
                     ) : (
-                      <span style={{ fontSize: 13, fontWeight: 500, color: "#FFC145" }}>{c.authorName}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: "#FFFFFF" }}>{c.authorName}</span>
                     )}
                     <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-                      <span style={{ fontSize: 11, color: "#5A5182" }}>{c.createdAt}</span>
+                      <span style={{ fontSize: 11, color: "#565C99" }}>{c.createdAt}</span>
                       {canDelete && (
                         <button
                           onClick={() => removeComment(c.id)}
                           title="ลบความคิดเห็น"
-                          style={{ background: "none", border: "none", color: "#FF3D8A", cursor: "pointer", padding: 0, display: "flex" }}
+                          style={{ background: "none", border: "none", color: "#49CAFF", cursor: "pointer", padding: 0, display: "flex" }}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -251,20 +251,20 @@ export default function EventDetailClient({ event: initialEvent, currentUser, in
                           onClick={() => reportCommentById(c.id)}
                           disabled={alreadyReported}
                           title={alreadyReported ? "รายงานแล้ว" : "รายงานความคิดเห็นนี้"}
-                          style={{ background: "none", border: "none", color: alreadyReported ? "#5A5182" : "#8177AE", cursor: alreadyReported ? "default" : "pointer", padding: 0, display: "flex" }}
+                          style={{ background: "none", border: "none", color: alreadyReported ? "#565C99" : "#7A85B8", cursor: alreadyReported ? "default" : "pointer", padding: 0, display: "flex" }}
                         >
                           <Flag size={13} />
                         </button>
                       )}
                     </div>
                   </div>
-                  <div style={{ fontSize: 14, color: "#E4DEFF" }}>{c.text}</div>
+                  <div style={{ fontSize: 14, color: "#E4E9FF" }}>{c.text}</div>
                 </div>
               );
             })}
-            {event.comments.length === 0 && <p style={{ fontSize: 13, color: "#5A5182" }}>ยังไม่มีความคิดเห็น เป็นคนแรกที่คอมเมนต์เลย!</p>}
+            {event.comments.length === 0 && <p style={{ fontSize: 13, color: "#565C99" }}>ยังไม่มีความคิดเห็น เป็นคนแรกที่คอมเมนต์เลย!</p>}
           </div>
-          {error && <p style={{ color: "#FF3D8A", fontSize: 13 }}>{error}</p>}
+          {error && <p style={{ color: "#49CAFF", fontSize: 13 }}>{error}</p>}
           <div style={{ display: "flex", gap: 8 }}>
             <input className="input" value={comment} onChange={(e) => setComment(e.target.value)}
               placeholder={currentUser ? `คอมเมนต์ในนาม ${currentUser.username}...` : "เข้าสู่ระบบเพื่อคอมเมนต์"} />

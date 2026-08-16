@@ -57,7 +57,7 @@ function SyncToProvince({ centerLat, centerLng, hasPin, lat, lng }) {
 
 // ไอคอนหมุดสีธีมเว็บ (ค่า default ของ react-leaflet ชี้ไปที่รูปที่ไม่มีอยู่จริงถ้าไม่ตั้งเอง)
 const pinIcon = new L.DivIcon({
-  html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,#FF3D8A,#7F49FF);transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>`,
+  html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,#49CAFF,#5271FF);transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>`,
   className: "",
   iconSize: [26, 26],
   iconAnchor: [13, 26],
@@ -83,7 +83,7 @@ export default function PinPicker({ lat, lng, centerLat, centerLng, onChange }) 
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 6, background: "rgba(255,193,69,0.08)", border: "1px solid rgba(255,193,69,0.25)", borderRadius: 10, padding: "10px 12px", marginBottom: 10, fontSize: 12, color: "#FFC145", lineHeight: 1.6 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 6, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 10, padding: "10px 12px", marginBottom: 10, fontSize: 12, color: "#FFFFFF", lineHeight: 1.6 }}>
         <AlertTriangle size={15} style={{ flexShrink: 0, marginTop: 1 }} />
         <span>
           ปักหมุดได้เฉพาะ<b>สถานที่สาธารณะ</b>ที่เปิดให้คนทั่วไปเข้าร่วมได้จริงเท่านั้น
@@ -92,7 +92,7 @@ export default function PinPicker({ lat, lng, centerLat, centerLng, onChange }) 
       </div>
 
       {looksMismatched && (
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 6, background: "rgba(255,61,138,0.08)", border: "1px solid rgba(255,61,138,0.3)", borderRadius: 10, padding: "10px 12px", marginBottom: 10, fontSize: 12, color: "#FF3D8A", lineHeight: 1.6 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 6, background: "rgba(73,202,255,0.08)", border: "1px solid rgba(73,202,255,0.3)", borderRadius: 10, padding: "10px 12px", marginBottom: 10, fontSize: 12, color: "#49CAFF", lineHeight: 1.6 }}>
           <AlertTriangle size={15} style={{ flexShrink: 0, marginTop: 1 }} />
           <span>หมุดที่ปักอยู่ไกลจากจังหวัดที่เลือกไว้พอสมควร ลองเช็คว่าเลือกจังหวัดถูกต้องหรือปักหมุดผิดตำแหน่งหรือเปล่า</span>
         </div>
@@ -131,13 +131,13 @@ export default function PinPicker({ lat, lng, centerLat, centerLng, onChange }) 
           <button
             type="button"
             onClick={() => onChange(null, null)}
-            style={{ position: "absolute", top: 8, right: 8, zIndex: 500, background: "rgba(21,15,46,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#FF3D8A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
+            style={{ position: "absolute", top: 8, right: 8, zIndex: 500, background: "rgba(11,14,46,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#49CAFF", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
           >
             <X size={12} /> ล้างหมุด
           </button>
         )}
       </div>
-      <p style={{ fontSize: 11, color: "#5A5182", margin: "6px 0 0" }}>
+      <p style={{ fontSize: 11, color: "#565C99", margin: "6px 0 0" }}>
         {hasPin ? "แตะที่แผนที่หรือลากหมุดเพื่อปรับตำแหน่ง" : "แตะบนแผนที่เพื่อปักหมุด (ไม่บังคับ — ข้ามได้ถ้าไม่สะดวก)"}
       </p>
     </div>
